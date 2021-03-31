@@ -1,11 +1,12 @@
 import {Model, Column, Table, Index, Default, HasMany} from 'sequelize-typescript';
-import {Category} from './Category';
-import {Episode} from './Episode';
+// Import Category from './Category';
+// import CategoryToPodcast from './category-to-podcast';
+import Episode from './00-episode';
 
 @Table({
 	timestamps: true
 })
-export class Podcast extends Model<Podcast> {
+class Podcast extends Model<Podcast> {
 	@Column
 	name!: string;
 
@@ -15,14 +16,16 @@ export class Podcast extends Model<Podcast> {
 	@Column
 	homepageURL: string;
 
-	@HasMany(() => Category)
-	categories: Category[];
+	// @HasMany(() => Category, { through: 'CategoryToPodcast' })
+	// categories: Category[];
 
 	@HasMany(() => Episode)
 	episodes: Episode[];
 
-	@Column
 	@Index
 	@Default(false)
+	@Column
 	isDeleted!: boolean;
 }
+
+export default Podcast;

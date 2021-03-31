@@ -1,12 +1,12 @@
 import {Model, Column, Table, Index, Default} from 'sequelize-typescript';
 import {DataTypes} from 'sequelize';
-import {Category} from './category';
-import {Podcast} from './podcast';
+import Category from './00-category';
+import Podcast from './00-podcast';
 
 @Table({
 	timestamps: true
 })
-export class CategoryToPodcast extends Model<CategoryToPodcast> {
+class CategoryToPodcast extends Model<CategoryToPodcast> {
 	@Column({
 		type: DataTypes.INTEGER,
 		references: {
@@ -27,8 +27,10 @@ export class CategoryToPodcast extends Model<CategoryToPodcast> {
 	})
 	podcastId!: number;
 
-	@Column
 	@Index
 	@Default(false)
+	@Column
 	isDeleted!: boolean;
 }
+
+export default CategoryToPodcast;

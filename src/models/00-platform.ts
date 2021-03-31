@@ -4,20 +4,21 @@ import {Model, Column, Table, Unique, Index, Default} from 'sequelize-typescript
 	timestamps: true
 })
 
-export class Platform extends Model<Platform> {
-	@Column
+class Platform extends Model<Platform> {
 	@Unique
+	@Column
 	name!: string;
 
-	@Column
 	@Unique
-	id!: string;
+	@Column
+	platformId!: string;
 
 	@Column
 	urlTemplateString!: string;
 
-	@Column
 	@Index
 	@Default(false)
+	@Column
 	isDeleted!: boolean;
 }
+export default Platform;

@@ -3,13 +3,15 @@ import {Model, Column, Table, Unique, Index, Default} from 'sequelize-typescript
 @Table({
 	timestamps: true
 })
-export class Category extends Model<Category> {
-	@Column
+class Category extends Model<Category> {
 	@Unique
-	string!: string;
-
 	@Column
+	label!: string;
+
 	@Index
 	@Default(false)
+	@Column
 	isDeleted!: boolean;
 }
+
+export default Category;

@@ -1,10 +1,10 @@
-import {Model, Column, Table, BelongsTo, Index, Default} from 'sequelize-typescript';
-import {Podcast} from './podcast';
+import {Model, Column, Table, BelongsTo, Index, Default, ForeignKey} from 'sequelize-typescript';
+import Podcast from './00-podcast';
 
 @Table({
 	timestamps: true
 })
-export class Episode extends Model<Episode> {
+class Episode extends Model<Episode> {
 	@Column
 	title!: string;
 
@@ -29,8 +29,12 @@ export class Episode extends Model<Episode> {
 	@Column
 	publishedAt: Date;
 
-	@Column
 	@Index
 	@Default(false)
+	@Column
 	isDeleted!: boolean;
+
+	@ForeignKey(() => Podcast)
+	podcastId: number;
 }
+export default Episode;

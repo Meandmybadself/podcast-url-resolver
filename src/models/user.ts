@@ -2,7 +2,7 @@ import {Model, Column, Table, Index, Default} from 'sequelize-typescript';
 @Table({
 	timestamps: true
 })
-export class User extends Model<User> {
+class User extends Model<User> {
 	@Column
 	email!: string;
 
@@ -12,8 +12,9 @@ export class User extends Model<User> {
 	@Column
 	role: string;
 
-	@Column
 	@Index
 	@Default(false)
+	@Column
 	isDeleted!: boolean;
 }
+export default User;

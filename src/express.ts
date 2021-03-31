@@ -14,6 +14,7 @@ app.get('/', (_request: Request, response: Response) => {
 		message: 'Episodes.fm'
 	});
 });
+
 app.get('/platforms', async (_request: Request, response: Response) => {
 	const result: any = await sequelize.model('Platform').findAll();
 	return response.status(200).json({
@@ -21,7 +22,9 @@ app.get('/platforms', async (_request: Request, response: Response) => {
 		result
 	});
 });
-app.post('/platforms', notImplemented);
+// App.post('/platforms', async (request: Request, response: Response) => {
+//   const result: any = await sequelize.model('Platform').findOrCreate()
+// });
 app.delete('/platforms', notImplemented);
 
 app.get('/episodes/lookup/:url', notImplemented);
