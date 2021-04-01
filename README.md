@@ -2,8 +2,6 @@
 
 ## URLs
 
-* [Serverless dev admin dashboard](https://app.serverless.com/episodes)
-
 ## Development
 
 ### Assumptions
@@ -20,3 +18,8 @@
 ## Docs
 
 * [Template documentation](./docs/TEMPLATE.md)
+
+
+## Development notes
+
+* Models need to be instantiated, dependencies-first.  That's why the files are named the way they are.

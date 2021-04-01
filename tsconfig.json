@@ -11,7 +11,9 @@
     "noUnusedParameters": true,
     "outDir": "dist",
     "sourceMap": true,
-    "target": "esnext"
+    "target": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "exclude": [
     "node_modules"

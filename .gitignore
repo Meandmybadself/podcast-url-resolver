@@ -138,9 +138,6 @@ dist/
 # vuepress build output
 .vuepress/dist
 
-# Serverless directories
-.serverless/
-
 # FuseBox cache
 .fusebox/
 
@@ -518,13 +515,3 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/node,macos,visualstudio
-
-# Created by https://www.toptal.com/developers/gitignore/api/serverless
-# Edit at https://www.toptal.com/developers/gitignore?templates=serverless
-
-### Serverless ###
-# Ignore build directory
-.serverless
-.build
-
-# End of https://www.toptal.com/developers/gitignore/api/serverless
