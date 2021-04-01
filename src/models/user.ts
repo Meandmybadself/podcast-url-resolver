@@ -1,20 +1,22 @@
-import {Model, Column, Table, Index, Default} from 'sequelize-typescript';
+import { Model, Column, Table } from 'sequelize-typescript';
+
 @Table({
-	timestamps: true
+  timestamps: true,
+  paranoid: true
 })
 class User extends Model<User> {
-	@Column
-	email!: string;
+  @Column({
+    validate: {
+      isEmail: true
+    }
+  })
+  email!: string;
 
-	@Column
-	secret!: string;
+  @Column
+  secret!: string;
 
-	@Column
-	role: string;
-
-	@Index
-	@Default(false)
-	@Column
-	isDeleted!: boolean;
+  @Column
+  role: 'user' | 'admin';
 }
 export default User;
+
