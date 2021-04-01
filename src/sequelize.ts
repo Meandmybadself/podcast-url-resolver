@@ -1,5 +1,7 @@
 import {Sequelize} from 'sequelize-typescript';
 import path from 'path';
+import Platform from './models/00-platform';
+import PlatformHost from './models/platform-host';
 
 const sequelize = new Sequelize({
 	dialect: 'postgres',
@@ -10,5 +12,24 @@ const sequelize = new Sequelize({
 	logging: process.env.SILENT !== '1',
 	models: [path.resolve(__dirname, 'models')]
 });
+
+const initializeBaseTables = async () => {
+	console.log('Initializing base tables.');
+	await Platform.create({name: 'Overcast', platformId: 'overcast'});
+	await Platform.create({name: 'Apple Podcasts', platformId: 'apple'});
+
+	await PlatformHost.create({hostname: 'overcast.fm', platformId: 1});
+	await PlatformHost.create({hostname: 'podcasts.apple.com', platformId: 2});
+	console.log('Done initializing base tables.');
+};
+
+(async () => {
+	if (process.env.DB_INIT_BASE_TABLES === '1') {
+		await sequelize.sync({force: true});
+		await initializeBaseTables();
+	} else {
+		await sequelize.sync({alter: true});
+	}
+})();
 
 export default sequelize;

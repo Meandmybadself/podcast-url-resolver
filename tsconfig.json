@@ -3,11 +3,12 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "lib": [
-      "esnext"
+      "esnext",
+      "DOM"
     ],
     "module": "commonjs",
     "moduleResolution": "node",
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "outDir": "dist",
     "sourceMap": true,

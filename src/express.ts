@@ -2,32 +2,44 @@ import bodyParser from 'body-parser';
 import express, {Request, Response} from 'express';
 import errorhandler from 'strong-error-handler';
 
-import episodeRoutes from './routes/episodes';
+import episodeRoutes from './routes/episode';
 import platformRoutes from './routes/platform';
+import podcastRoutes from './routes/podcast';
 import userRoutes from './routes/user';
 
-export const app = express();
+export const initExpress = () => {
+	const app = express();
 
-app.use(bodyParser.json());
+	const router = express.Router();
 
-app.get('/', (_request: Request, response: Response) => {
-	return response.status(200).json({
-		message: 'Episodes.fm'
+	router.use(bodyParser.json());
+
+	router.get('/', (_request: Request, response: Response) => {
+		return response.status(200).json({
+			message: 'Episodes.fm'
+		});
 	});
-});
 
-episodeRoutes(app);
-platformRoutes(app);
-userRoutes(app);
+	episodeRoutes(router);
+	platformRoutes(router);
+	podcastRoutes(router);
+	userRoutes(router);
 
-app.use((_request: Request, response: Response) => {
-	return response.status(404).json({
-		error: 'Not Found'
+	router.use((_request: Request, response: Response) => {
+		return response.status(404).json({
+			error: 'Not Found'
+		});
 	});
-});
 
-app.use(errorhandler({
-	debug: process.env.ENV !== 'prod',
-	log: true
-}));
+	router.use(errorhandler({
+		debug: process.env.ENV !== 'prod',
+		log: true
+	}));
+
+	app.use('/v1', router);
+
+	const port: number = Number.parseInt(process.env.PORT, 10) || 8000;
+	app.listen(port);
+	console.info(`Server started: http://127.0.0.1:${port}`);
+};
 

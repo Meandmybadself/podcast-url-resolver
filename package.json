@@ -16,20 +16,28 @@
     "start": "node dist/index.js",
     "postinstall": "tsc",
     "watch-node": "nodemon dist/index.js",
-    "watch-ts": "tsc -w"
+    "watch-ts": "tsc -w",
+    "kill:debugger": "kill -9 $(lsof -t -i tcp:9229)"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "node-podcast-parser": "^2.3.0",
+    "normalize-url": "^6.0.0",
     "pg": "^8.5.1",
+    "podcast-index-api": "^1.1.8",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",
     "strong-error-handler": "^4.0.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/express": "^4.17.11",
     "@types/node": "^14.14.37",
     "@types/sequelize": "^4.28.9",
@@ -58,7 +66,10 @@
       "no-new": 0,
       "new-cap": 0,
       "@typescript-eslint/no-var-requires": 0,
-      "@typescript-eslint/dot-notation": 0
+      "@typescript-eslint/dot-notation": 0,
+      "max-depth": 0,
+      "promise/prefer-await-to-then": 0,
+      "default-case": 0
     }
   },
   "eslintConfig": {

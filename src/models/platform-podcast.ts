@@ -1,24 +1,34 @@
-import {Model, Column, Table, BelongsTo, ForeignKey} from 'sequelize-typescript';
+import {Model, Column, Table, BelongsTo, ForeignKey, Unique} from 'sequelize-typescript';
+import {Optional} from 'sequelize/types';
 import Platform from './00-platform';
-import Podcast from './00-podcast';
+import CanonicalPodcast from './00-canonical-podcast';
+
+interface IPlatformPodcast {
+	id: number;
+	platformId: number;
+	canonicalPodcastId: number;
+	platformPodcastId: string;
+}
+
+interface PlatformPodcastCreationAttributes extends Optional<IPlatformPodcast, 'id'> { }
 
 @Table({
-	timestamps: true,
 	paranoid: true
 })
-class PlatformPodcast extends Model<PlatformPodcast> {
+class PlatformPodcast extends Model<IPlatformPodcast, PlatformPodcastCreationAttributes> {
 	@BelongsTo(() => Platform)
 	platform!: Platform;
 
 	@ForeignKey(() => Platform)
 	platformId!: number;
 
-	@BelongsTo(() => Podcast)
-	podcast!: Podcast;
+	@BelongsTo(() => CanonicalPodcast)
+	canonicalPodcast!: CanonicalPodcast;
 
-	@ForeignKey(() => Podcast)
-	podcastId!: number;
+	@ForeignKey(() => CanonicalPodcast)
+	canonicalPodcastId!: number;
 
+	@Unique
 	@Column
 	platformPodcastId!: string;
 }

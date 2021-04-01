@@ -1,23 +1,23 @@
-import {Request, Response, Express} from 'express';
+import {Request, Response, Router} from 'express';
 import sequelize from '../sequelize';
 
-const routes = (app: Express) => {
-	app.get('/platforms', async (_request: Request, response: Response) => {
-		const result: any = await sequelize.model('Platform').findAll();
+const routes = (router: Router) => {
+	router.get('/platforms', async (_request: Request, response: Response) => {
+		const result: any = await sequelize.model('Platform').findAll({attributes: ['name', 'platformId']});
 		return response.status(200).json({
 			message: 'ok',
 			result
 		});
 	});
-	app.post('/platform', async (request: Request, response: Response) => {
-		const {name, platformId, urlTemplateString} = request.body;
-		const result = await sequelize.model('Platform').create({name, platformId, urlTemplateString});
+	router.post('/platform', async (request: Request, response: Response) => {
+		const {name, platformId} = request.body;
+		const result = await sequelize.model('Platform').create({name, platformId});
 		return response.status(200).json({
 			message: 'ok',
 			result
 		});
 	});
-	app.delete('/platform/:id', async (request: Request, response: Response) => {
+	router.delete('/platform/:id', async (request: Request, response: Response) => {
 		const {id} = request.params;
 		const result = await sequelize.model('Platform').destroy({
 			where: {
