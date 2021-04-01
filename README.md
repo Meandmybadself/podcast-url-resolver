@@ -23,3 +23,7 @@
 ## Development notes
 
 * Models need to be instantiated, dependencies-first.  That's why the files are named the way they are.
+
+## Key Decisions
+
+* We went with a JSON response instead of GQL because we believe that it will primarily be server-side services consuming this API.
