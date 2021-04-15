@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response, Express} from 'express';
+import {NextFunction, Request, Response, Router} from 'express';
 import sequelize from '../sequelize';
 import jwt from 'jsonwebtoken';
 
@@ -63,7 +63,7 @@ export const requiresAdmin = async (request: Request, response: Response, next: 
 	response.status(401).end();
 };
 
-const routes = (app: Express) => {
+const routes = (app: Router) => {
 	app.post('/user', requiresAdmin, async (request: Request, response: Response) => {
 		const {email, role} = request.body;
 		// Create a jwt secret

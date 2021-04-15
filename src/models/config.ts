@@ -1,8 +1,8 @@
 import {Model, Column, Table, Unique} from 'sequelize-typescript';
 
 @Table({
-	timestamps: true,
-	paranoid: true
+	paranoid: true,
+	timestamps: false
 })
 class Config extends Model<Config> {
 	@Unique

@@ -1,10 +1,15 @@
-import {Model, Column, Table, Unique, Index, Default} from 'sequelize-typescript';
+import {Model, Column, Table, Unique, Index, Default, HasMany} from 'sequelize-typescript';
+import {Optional} from 'sequelize/types';
+import PlatformHost from './platform-host';
+import {IPlatform} from '../interfaces';
+
+interface PlatformCreationAttributes extends Optional<IPlatform, 'id'> { }
 
 @Table({
-	timestamps: true
+	timestamps: false,
+	paranoid: true
 })
-
-class Platform extends Model<Platform> {
+class Platform extends Model<IPlatform, PlatformCreationAttributes> {
 	@Unique
 	@Column
 	name!: string;
@@ -13,12 +18,12 @@ class Platform extends Model<Platform> {
 	@Column
 	platformId!: string;
 
-	@Column
-	urlTemplateString!: string;
+	@HasMany(() => PlatformHost)
+	platformHosts: PlatformHost[];
 
 	@Index
-	@Default(false)
+	@Default(true)
 	@Column
-	isDeleted!: boolean;
+	isActive!: boolean;
 }
 export default Platform;

@@ -1,11 +1,11 @@
 import {Model, Column, Table} from 'sequelize-typescript';
 import {DataTypes} from 'sequelize';
 import Category from './00-category';
-import Podcast from './00-podcast';
+import CanonicalPodcast from './00-canonical-podcast';
 
 @Table({
-	timestamps: true,
-	paranoid: true
+	paranoid: true,
+	timestamps: false
 })
 class CategoryToPodcast extends Model<CategoryToPodcast> {
 	@Column({
@@ -21,7 +21,7 @@ class CategoryToPodcast extends Model<CategoryToPodcast> {
 	@Column({
 		type: DataTypes.INTEGER,
 		references: {
-			model: Podcast,
+			model: CanonicalPodcast,
 			key: 'id'
 		},
 		unique: 'categoryPodcast'

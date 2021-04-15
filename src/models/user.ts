@@ -1,7 +1,6 @@
 import {Model, Column, Table} from 'sequelize-typescript';
 
 @Table({
-	timestamps: true,
 	paranoid: true
 })
 class User extends Model<User> {
