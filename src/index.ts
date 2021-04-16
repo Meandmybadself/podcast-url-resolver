@@ -8,7 +8,7 @@ if (process.env.DB_HOST) {
 console.log(`Episodes.fm starting in ${process.env.ENV} mode.`);
 
 import sequelize from './sequelize';
-import { initExpress } from './express';
+import {initExpress} from './express';
 
 (async () => {
 	try {
