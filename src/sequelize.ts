@@ -35,6 +35,11 @@ const initializeBaseTables = async () => {
 		console.log('Altering tables.');
 		await sequelize.sync({alter: true});
 	}
+
+	if (process.env.PREPUSH_CHECK) {
+		console.log('In PREPUSH check. Successfully started. Exiting.'); // eslint-disable-line unicorn/no-process-exit
+		process.exit();
+	}
 })();
 
 export default sequelize;

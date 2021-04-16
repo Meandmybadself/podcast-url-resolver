@@ -17,7 +17,8 @@
     "postinstall": "tsc",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
-    "kill:debugger": "kill -9 $(lsof -t -i tcp:9229)"
+    "kill:debugger": "kill -9 $(lsof -t -i tcp:9229)",
+    "test:startup": "PREPUSH_CHECK=1 ts-node src/index.ts"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -58,7 +59,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint:all"
+      "pre-commit": "npm run lint:all",
+      "pre-push": "npm run test:startup"
     }
   },
   "xo": {
@@ -69,7 +71,9 @@
       "@typescript-eslint/dot-notation": 0,
       "max-depth": 0,
       "promise/prefer-await-to-then": 0,
-      "default-case": 0
+      "default-case": 0,
+      "unicorn/no-process-exit": 0,
+      "eslint-comments/no-unused-disable": 0
     }
   },
   "eslintConfig": {
