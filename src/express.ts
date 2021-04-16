@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import express, {Request, Response} from 'express';
 import errorhandler from 'strong-error-handler';
+import path from 'path';
 
 import episodeRoutes from './routes/episode';
 import platformRoutes from './routes/platform';
@@ -15,9 +16,7 @@ export const initExpress = () => {
 	router.use(bodyParser.json());
 
 	router.get('/', (_request: Request, response: Response) => {
-		return response.status(200).json({
-			message: 'Episodes.fm'
-		});
+		response.status(200).sendFile(path.join(__dirname, '/templates/index.html'));
 	});
 
 	episodeRoutes(router);

@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 
 import {find, set, omit} from 'lodash';
-import {IPlatformClient, ISearchCriteria, ICanonicalPodcast, ICanonicalEpisode, ICanonicalPodcastWithEpisodes, IFeedEpisode} from '../interfaces';
+import {IPlatformClient, ISearchCriteria, ICanonicalPodcast, ICanonicalEpisode, ICanonicalPodcastWithEpisodes, IFeedEpisode, IFeed, IPodcastIndexSearchResponse, IPodcastIndexPodcast} from '../interfaces';
 import {loadAndUpsertFeed, loadFeed} from './feed';
 import {makeSearchSafeString} from '../utilities/string';
 import CanonicalEpisode from '../models/00-canonical-episode';
@@ -53,6 +53,9 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 		searchCriteria = await service.getSearchCriteriaFromShareURL(platformEpisodeURL);
 
 		if (searchCriteria) {
+			console.log('searchCriteria podcast title', searchCriteria.podcastTitle);
+			console.log('searchCriteria episode title', searchCriteria.episodeTitle);
+
 			// We found at minimum, a podcast title & episode title to work with.
 			let canonicalPodcast: ICanonicalPodcast | undefined;
 			let canonicalEpisode: ICanonicalEpisode | undefined;
@@ -74,47 +77,52 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 				console.log(`Podcastindex lookup: "${searchCriteria.podcastTitle}"`);
 				// We don't have a canonical podcast in the db.
 				// Let's ask Podcastindex if it knows about this pod.
-				const podcastIndexResult = await podcastIndexAPI.searchByTerm(searchCriteria.podcastTitle);
+				const podcastIndexResult: IPodcastIndexSearchResponse = await podcastIndexAPI.searchByTerm(searchCriteria.podcastTitle);
 
 				// Get rid of podcats we can't use.
 				if (podcastIndexResult?.feeds?.length) {
-					podcastIndexResult.feeds = podcastIndexResult.feeds.filter(feedItem =>
+					podcastIndexResult.feeds = podcastIndexResult.feeds.filter((feedItem: IPodcastIndexPodcast) =>
 						feedItem.locked !== 1 &&
 						feedItem.dead !== 1);
 				}
 
 				if (podcastIndexResult?.feeds?.length) {
-					console.log('Found an episode in podcastindex.');
-					// We're presuming that the first match is the correct match.
-					// If this turns out to not be the case, do some string comparison checking.
-					// We only need the feed URL.
-					const {
-						url,
-						itunesId
-					}: {
-						url: string;
-						itunesId: number;
-						id: number;
-					} = podcastIndexResult.feeds[0];
+					console.log('Podcastindex has results.');
+					const podcastSearchTitle: string = makeSearchSafeString(searchCriteria.podcastTitle);
+					const podcastTitleMatch: IPodcastIndexPodcast | undefined = find(podcastIndexResult.feeds, podcast => makeSearchSafeString(podcast.title) === podcastSearchTitle);
 
-					const podcastWithEpisodes: ICanonicalPodcastWithEpisodes = await loadAndUpsertFeed(url);
+					if (podcastTitleMatch) {
+						console.log('Found a podcastindex podcast using search strings', podcastTitleMatch.title);
+						// We're presuming that the first match is the correct match.
+						// If this turns out to not be the case, do some string comparison checking.
+						// We only need the feed URL.
+						const {
+							url,
+							itunesId
+						}: {
+							url: string;
+							itunesId: number;
+							id: number;
+						} = podcastTitleMatch;
+						const podcastWithEpisodes: ICanonicalPodcastWithEpisodes = await loadAndUpsertFeed(url);
 
-					if (podcastWithEpisodes) {
-						canonicalPodcast = omit(podcastWithEpisodes, ['episodes']);
-						episodes = podcastWithEpisodes.episodes;
+						if (podcastWithEpisodes) {
+							canonicalPodcast = omit(podcastWithEpisodes, ['episodes']);
+							episodes = podcastWithEpisodes.episodes;
 
-						if (itunesId) {
-							// If an iTunes podcast ID is provided, we might as well toss this in the DB too.
-							console.log('Found an iTunes podcast id in podcastindex.  Inserting.');
-							const platformId: number = (await PlatformData.getPlatformById('apple')).id;
-							try {
-								await PlatformPodcast.create({
-									platformPodcastId: itunesId.toString(),
-									platformId,
-									canonicalPodcastId: canonicalPodcast.id
-								});
-							} catch (error: unknown) {
-								console.log('Could not create iTunes platform podcast', error);
+							if (itunesId) {
+								// If an iTunes podcast ID is provided, we might as well toss this in the DB too.
+								console.log('Found an iTunes podcast id in podcastindex.  Inserting.');
+								const platformId: number = (await PlatformData.getPlatformById('apple')).id;
+								try {
+									await PlatformPodcast.create({
+										platformPodcastId: itunesId.toString(),
+										platformId,
+										canonicalPodcastId: canonicalPodcast.id
+									});
+								} catch (error: unknown) {
+									console.log('Could not create iTunes platform podcast', error);
+								}
 							}
 						}
 					}
@@ -133,6 +141,7 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 						// No canonical episode.
 						// We _should_ have one if we look in the feed episode list.
 						// Did we load the feed episode list?
+
 						if (!episodes) {
 							// We did not. Load feed.
 							const feed = await loadFeed(canonicalPodcast.feedURL);
@@ -218,7 +227,7 @@ const getEpisodeByShareURL = async (platformEpisodeURL: string) => {
 
 				const thirdPartyEpisodeURLs = await getThirdPartyPlatformEpisodeURLs(canonicalPodcast, canonicalEpisode);
 
-				set(canonicalEpisode, 'thirdPartyEpiosdeRLs', thirdPartyEpisodeURLs);
+				set(canonicalEpisode, 'thirdPartyEpisodeURLs', thirdPartyEpisodeURLs);
 
 				canonicalEpisode['podcast'] = omit(canonicalEpisode['podcast'], ['searchTitle', 'id', 'createdAt', 'updatedAt', 'deletedAt']);
 

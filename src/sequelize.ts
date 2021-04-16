@@ -1,3 +1,5 @@
+/* eslint eslint-comments/no-unused-enable: error */
+
 import {Sequelize} from 'sequelize-typescript';
 import path from 'path';
 import Platform from './models/00-platform';
@@ -34,6 +36,13 @@ const initializeBaseTables = async () => {
 	} else {
 		console.log('Altering tables.');
 		await sequelize.sync({alter: true});
+	}
+
+	if (process.env.PREPUSH_CHECK) {
+		console.log('In PREPUSH check. Successfully started. Exiting.');
+		/* eslint-disable unicorn/no-process-exit */
+		process.exit();
+		/* eslint-enable unicorn/no-process-exit */
 	}
 })();
 

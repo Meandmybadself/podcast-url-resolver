@@ -10,6 +10,7 @@ export interface ICanonicalEpisode {
 	publishDate: Date;
 	searchTitle: string;
 	title: string;
+	link?: string;
 }
 
 export interface IFeedEpisode {

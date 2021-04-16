@@ -3,7 +3,9 @@ import {lookupEpisodeByFeedURLAndGUID, lookupEpisodeByShareURL} from '../service
 
 const routes = (router: Router) => {
 	router.get('/episode/lookup/url/:url(*)', async (request: Request, response: Response) => {
-		const episode = await lookupEpisodeByShareURL(request.params.url);
+		// This is to catch stuff in a query string.  Params doesn't provide that.
+		const parameters = request.originalUrl.replace('/v1/episode/lookup/url/', '');
+		const episode = await lookupEpisodeByShareURL(parameters);
 		response.status(200).send({message: 'ok', episode});
 	});
 

@@ -63,8 +63,8 @@ export const requiresAdmin = async (request: Request, response: Response, next: 
 	response.status(401).end();
 };
 
-const routes = (app: Router) => {
-	app.post('/user', requiresAdmin, async (request: Request, response: Response) => {
+const routes = (router: Router) => {
+	router.post('/user', requiresAdmin, async (request: Request, response: Response) => {
 		const {email, role} = request.body;
 		// Create a jwt secret
 		const secret: string = jwt.sign({email, role}, process.env.JWT_SECRET, {
@@ -76,7 +76,7 @@ const routes = (app: Router) => {
 			result
 		});
 	});
-	app.get('/users', requiresAdmin, async (_request: Request, response: Response) => {
+	router.get('/users', requiresAdmin, async (_request: Request, response: Response) => {
 		const result: any = await sequelize.model('User').findAll({
 			attributes: ['email', 'role', 'secret']
 		});
@@ -85,7 +85,7 @@ const routes = (app: Router) => {
 			result
 		});
 	});
-	app.delete('/user/:id', requiresAdmin, async (request: Request, response: Response) => {
+	router.delete('/user/:id', requiresAdmin, async (request: Request, response: Response) => {
 		const {id} = request.params;
 		const result = await sequelize.model('User').destroy({
 			where: {

@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IPlatformClient, ISearchCriteria} from '../../interfaces';
 import BasePlatformClient from './base-platform';
 import cheerio from 'cheerio';
@@ -59,37 +59,47 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 		// There isn't any cost-savings in persisting just the podcast id in the db here, because when you query overcast, you get all episodes
 		const podcastURL: string | void = await Overcast.fetchPodcastURLByTitle(canonicalPodcast.title);
 		if (podcastURL) {
-			const {data} = await this._axiosInstance.get(podcastURL);
-			const page = cheerio.load(data);
-			const episode = page('a.extendedepisodecell')
-				.toArray()
-				.map(element => ({
-					title: normalizeText(cheerio(element).find('.title').text()),
-					overcastId: element.attribs.href,
-					overcastURL: `https://overcast.fm${element.attribs.href}`
-				}))
-				.find(element => makeSearchSafeString(element.title) === makeSearchSafeString(canonicalEpisode.title));
+			let response: AxiosResponse;
+			try {
+				response = await this._axiosInstance.get(podcastURL);
+				const {data} = response;
+				const page = cheerio.load(data);
+				const episode = page('a.extendedepisodecell')
+					.toArray()
+					.map(element => ({
+						title: normalizeText(cheerio(element).find('.title').text()),
+						overcastId: element.attribs.href,
+						overcastURL: `https://overcast.fm${element.attribs.href}`
+					}))
+					.find(element => makeSearchSafeString(element.title) === makeSearchSafeString(canonicalEpisode.title));
 
-			if (episode) {
-				console.log('Found overcast episode. Inserting.');
-				await PlatformEpisode.findOrCreate({
-					where: {
-						platformId,
-						episodeId: canonicalEpisode.id,
-						podcastId: canonicalPodcast.id,
-						platformEpisodeId: episode.overcastId
-					}
-				});
+				if (episode) {
+					console.log('Found overcast episode. Inserting.');
+					await PlatformEpisode.findOrCreate({
+						where: {
+							platformId,
+							episodeId: canonicalEpisode.id,
+							podcastId: canonicalPodcast.id,
+							platformEpisodeId: episode.overcastId
+						}
+					});
 
-				await PlatformEpisodeURL.findOrCreate({
-					where: {
-						episodeId: canonicalEpisode.id,
-						platformId,
-						platformEpisodeURL: episode.overcastURL
-					}
-				});
-			} else {
-				console.log('Did not find an overcast episode');
+					await PlatformEpisodeURL.findOrCreate({
+						where: {
+							episodeId: canonicalEpisode.id,
+							platformId,
+							platformEpisodeURL: episode.overcastURL
+						}
+					});
+				} else {
+					console.log('Did not find an overcast episode');
+					const finalURL: string = response.request.res.responseUrl;
+					console.log(`URL: ${finalURL}`);
+				}
+			} catch (error: unknown) {
+				console.error('Error while trying to fetch Overcast episode', error);
+				const finalURL: string = response.request.res.responseUrl;
+				console.log(`URL: ${finalURL}`);
 			}
 		}
 	}

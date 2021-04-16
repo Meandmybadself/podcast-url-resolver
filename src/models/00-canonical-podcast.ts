@@ -51,6 +51,7 @@ class CanonicalPodcast extends Model<ICanonicalPodcast, PodcastCreationAttribute
 	@Column
 	ownerEmail: string;
 
+	@AllowNull
 	@Column
 	link: string;
 

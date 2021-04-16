@@ -17,18 +17,6 @@ const routes = (router: Router) => {
 			result
 		});
 	});
-	router.delete('/platform/:id', async (request: Request, response: Response) => {
-		const {id} = request.params;
-		const result = await sequelize.model('Platform').destroy({
-			where: {
-				id
-			}
-		});
-		return response.status(200).json({
-			message: 'ok',
-			result
-		});
-	});
 };
 
 export default routes;

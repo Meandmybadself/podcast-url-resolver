@@ -11,7 +11,7 @@ export interface ICanonicalPodcast {
 	feedURL: string;
 	artworkURL: string;
 	language: string;
-	link: string;
+	link?: string;
 	ownerEmail?: string;
 	ownerName: string;
 	summary?: string;

@@ -68,14 +68,14 @@ export const loadAndUpsertFeed = async (feedURL: string): Promise<ICanonicalPodc
 					feedURL,
 					description,
 					artworkURL,
-					copyright: copyright || 'unknown',
+					copyright: copyright || null,
 					language,
 					author,
-					ownerName,
+					ownerName: ownerName || null,
 					ownerEmail,
 					explicit,
-					link,
-					type: type || 'unknown',
+					link: link || null,
+					type: type || null,
 					updated: new Date(updated)
 				},
 				plain: true
