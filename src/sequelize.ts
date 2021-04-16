@@ -24,10 +24,15 @@ const initializeBaseTables = async () => {
 };
 
 (async () => {
+	console.info('Connecting to database');
+	await sequelize.authenticate();
+	console.info('Connected to database.');
+
 	if (process.env.DB_INIT_BASE_TABLES === '1') {
 		await sequelize.sync({force: true});
 		await initializeBaseTables();
 	} else {
+		console.log('Altering tables.');
 		await sequelize.sync({alter: true});
 	}
 })();
