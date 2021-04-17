@@ -39,6 +39,6 @@ export const initExpress = () => {
 
 	const port: number = Number.parseInt(process.env.PORT, 10) || 8000;
 	app.listen(port);
-	console.info(`Server started: http://127.0.0.1:${port}`);
+	console.info(`⚡ Server started: http://127.0.0.1:${port}`);
 };
 

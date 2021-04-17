@@ -159,7 +159,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 	static async fetchPodcastURLByTitle(title: string): Promise<string | void> {
 		const podcastId: string | void = await Spotify.fetchPodcastIDByTitle(title);
 		if (podcastId) {
-			return `https://open.spotify.com/episode/${podcastId}`;
+			return `https://open.spotify.com/show/${podcastId}`;
 		}
 	}
 

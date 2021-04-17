@@ -16,7 +16,7 @@ const sequelize = new Sequelize({
 });
 
 const initializeBaseTables = async () => {
-	console.log('Initializing base tables.');
+	console.log('🖋️  Initializing base tables.');
 	await Platform.create({name: 'Overcast', platformId: 'overcast'});
 	await Platform.create({name: 'Apple Podcasts', platformId: 'apple'});
 	await Platform.create({name: 'Spotify', platformId: 'spotify'});
@@ -24,14 +24,11 @@ const initializeBaseTables = async () => {
 	await PlatformHost.create({hostname: 'overcast.fm', platformId: 1});
 	await PlatformHost.create({hostname: 'podcasts.apple.com', platformId: 2});
 	await PlatformHost.create({hostname: 'open.spotify.com', platformId: 3});
-
-	console.log('Done initializing base tables.');
 };
 
 (async () => {
-	console.info('Connecting to database');
 	await sequelize.authenticate();
-	console.info('Connected to database.');
+	console.info('🔌 Connected to database.');
 
 	if (process.env.DB_INIT_BASE_TABLES === '1') {
 		await sequelize.sync({force: true});
