@@ -1,5 +1,5 @@
 import {AxiosInstance} from 'axios';
-import {IPlatformClient, ISearchCriteria} from '../../interfaces';
+import {ICanonicalEpisode, ICanonicalPodcast, IPlatformClient, ISearchCriteria} from '../../interfaces';
 import BasePlatformClient from './base-platform';
 import {some, find} from 'lodash';
 import {makeSearchSafeString} from '../../utilities/string';
@@ -35,7 +35,6 @@ export default class Apple extends BasePlatformClient implements IPlatformClient
 
 	async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
 		try {
-			console.log('🍎.getSearchCriteriaFromShareURL', shareURL);
 			const data: string = (await BasePlatformClient.getPageData(shareURL)).toString();
 			const episodeTitle: string | void = BasePlatformClient.getRegExpMatch(`${data}`, /AudioObject","name":"([^"]+)"/);
 			const podcastTitle: string | void = BasePlatformClient.getRegExpMatch(`${data}`, /isPartOf":"([^"]+)/);
@@ -58,7 +57,6 @@ export default class Apple extends BasePlatformClient implements IPlatformClient
 	}
 
 	async lookupAppleItem(appleId: string): Promise<any> {
-		console.log('🍎.lookupAppleItem', appleId);
 		const url = `https://itunes.apple.com/lookup?id=${appleId}`;
 		const data = await BasePlatformClient.getPageData(url);
 		const {results} = data;
@@ -67,7 +65,7 @@ export default class Apple extends BasePlatformClient implements IPlatformClient
 		}
 	}
 
-	async fetchPlatformEpisode(canonicalPodcast: any, canonicalEpisode: any): Promise<void> {
+	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
 		const platformId = await this.getPlatformId();
 		let platformPodcast: any;
 
@@ -88,8 +86,6 @@ export default class Apple extends BasePlatformClient implements IPlatformClient
 		// Apple episode search
 		if (platformPodcast) {
 			const url = `http://itunes.apple.com/lookup?id=${platformPodcastId}&entity=podcastEpisode&limit=200`;
-			console.log('🍎._fetchPodcastEpisodes', url);
-
 			const results = (await BasePlatformClient.getPageData(url)).results
 				.filter((result: any) => result.kind !== 'podcast') // This means it's the podcast itself.
 				.map(result => ({...result, searchTitle: makeSearchSafeString(result.trackName)}));

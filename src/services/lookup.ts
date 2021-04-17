@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 
 import {find, set, omit} from 'lodash';
-import {IPlatformClient, ISearchCriteria, ICanonicalPodcast, ICanonicalEpisode, ICanonicalPodcastWithEpisodes, IFeedEpisode, IFeed, IPodcastIndexSearchResponse, IPodcastIndexPodcast} from '../interfaces';
+import {IPlatformClient, ISearchCriteria, ICanonicalPodcast, ICanonicalEpisode, ICanonicalPodcastWithEpisodes, IFeedEpisode, IPodcastIndexSearchResponse, IPodcastIndexPodcast} from '../interfaces';
 import {loadAndUpsertFeed, loadFeed} from './feed';
 import {makeSearchSafeString} from '../utilities/string';
 import CanonicalEpisode from '../models/00-canonical-episode';
@@ -14,13 +14,15 @@ import CanonicalPodcast from '../models/00-canonical-podcast';
 import PodcastIndexAPI from 'podcast-index-api';
 import normalizeUrl from 'normalize-url';
 import Apple from './platforms/apple';
+import Spotify from './platforms/spotify';
 import PlatformEpisode from '../models/platform-episode';
 import PlatformData from './platform-data';
 
 // Instantiate platform clients
 const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
 	overcast: new Overcast(),
-	apple: new Apple()
+	apple: new Apple(),
+	spotify: new Spotify()
 };
 
 const podcastIndexAPI = PodcastIndexAPI(process.env.PODCASTINDEX_KEY, process.env.PODCASTINDEX_SECRET);
@@ -112,7 +114,6 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 
 							if (itunesId) {
 								// If an iTunes podcast ID is provided, we might as well toss this in the DB too.
-								console.log('Found an iTunes podcast id in podcastindex.  Inserting.');
 								const platformId: number = (await PlatformData.getPlatformById('apple')).id;
 								try {
 									await PlatformPodcast.create({
@@ -280,6 +281,12 @@ export const lookupPodcastByFeedURL = async (feedURL: string): Promise<Record<st
 				case 'apple':
 					feedURL = await Apple.fetchPodcastURLByTitle(canonicalPodcast.title);
 					break;
+				case 'spotify':
+					feedURL = await Spotify.fetchPodcastURLByTitle(canonicalPodcast.title);
+					break;
+				default:
+					console.log('Unrecognized platformId', platformId);
+					break;
 			}
 
 			if (feedURL) {
@@ -328,6 +335,12 @@ const getThirdPartyPlatformEpisodeURLs = async (canonicalPodcast: ICanonicalPodc
 				// Look up platform episode id.
 				const platformPodcast = await PlatformPodcast.findOne({where: {platformId: platformEpisode.platformId}}); // eslint-disable-line no-case-declarations
 				thirdPartyURLs[platform.platformId] = `https://podcasts.apple.com/us/podcast/a/id${platformPodcast.platformPodcastId}?i=${platformEpisode.platformEpisodeId}`;
+				break;
+			case 'spotify':
+				thirdPartyURLs[platform.platformId] = `https://open.spotify.com/episode/${platformEpisode.platformEpisodeId}`;
+				break;
+			default:
+				console.log('Unrecognized platform id', platform.platformId);
 				break;
 		}
 	}));

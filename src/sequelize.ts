@@ -19,9 +19,12 @@ const initializeBaseTables = async () => {
 	console.log('Initializing base tables.');
 	await Platform.create({name: 'Overcast', platformId: 'overcast'});
 	await Platform.create({name: 'Apple Podcasts', platformId: 'apple'});
+	await Platform.create({name: 'Spotify', platformId: 'spotify'});
 
 	await PlatformHost.create({hostname: 'overcast.fm', platformId: 1});
 	await PlatformHost.create({hostname: 'podcasts.apple.com', platformId: 2});
+	await PlatformHost.create({hostname: 'open.spotify.com', platformId: 3});
+
 	console.log('Done initializing base tables.');
 };
 
@@ -39,7 +42,7 @@ const initializeBaseTables = async () => {
 	}
 
 	if (process.env.PREPUSH_CHECK) {
-		console.log('In PREPUSH check. Successfully started. Exiting.');
+		console.log('✅ prepush check - Successfully started. Exiting.');
 		/* eslint-disable unicorn/no-process-exit */
 		process.exit();
 		/* eslint-enable unicorn/no-process-exit */
