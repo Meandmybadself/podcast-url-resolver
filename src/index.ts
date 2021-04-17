@@ -5,7 +5,7 @@ if (process.env.DB_HOST) {
 	require('dotenv').config();
 }
 
-console.log(`Episodes.fm starting in ${process.env.ENV} mode.`);
+console.log(`((( Episodes.fm - ${process.env.ENV} )))`);
 
 import sequelize from './sequelize';
 import {initExpress} from './express';

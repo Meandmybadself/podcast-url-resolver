@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import {IPlatform, IPlatformClient, ISearchCriteria} from '../../interfaces';
+import {ICanonicalEpisode, ICanonicalPodcast, IPlatform, IPlatformClient, ISearchCriteria} from '../../interfaces';
 import PlatformEpisode from '../../models/platform-episode';
 import PlatformData from '../platform-data';
 
@@ -40,7 +40,7 @@ export default class BasePlatformClient implements IPlatformClient {
 		throw new Error('getSearchCriteria needs to be overridden. Is being called in BasePlatform');
 	}
 
-	async ensurePodcastEpisode(canonicalPodcast: any, canonicalEpisode: any): Promise<any> {
+	async ensurePodcastEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<any> {
 		const platformId: number = await this.getPlatformId();
 		console.log('ensurePodcastEpisode', this._id);
 		// See if we already have the platform episode.
