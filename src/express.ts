@@ -13,10 +13,15 @@ export const initExpress = () => {
 
 	const router = express.Router();
 
+	app.get('/', (_request: Request, response: Response) => {
+		response.redirect('/v1/');
+	});
+
+	router.use(express.static(path.join(__dirname, '/public')));
 	router.use(bodyParser.json());
 
 	router.get('/', (_request: Request, response: Response) => {
-		response.status(200).sendFile(path.join(__dirname, '/templates/index.html'));
+		response.status(200).sendFile(path.join(__dirname, 'public/index.html'));
 	});
 
 	episodeRoutes(router);
