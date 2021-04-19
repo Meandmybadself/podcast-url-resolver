@@ -17,10 +17,9 @@ export default class TemplateClient extends BasePlatformClient implements IPlatf
     console.log('getSearchCriteriaFromShareURL', shareURL)
   }
 
-  async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
+  async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void>
+      {
     console.log('fetchPlatformEpisode', canonicalPodcast, canonicalEpisode)
   }
-
-
 
 }

@@ -37,7 +37,7 @@ export default class BasePlatformClient implements IPlatformClient {
 	async getSearchCriteriaFromShareURL(_url: string): Promise<ISearchCriteria | void> {
 		// Tries to find an empirical episode / podcast title given a URL.
 		// This base method attempts to find them via RSS feed.
-		throw new Error('getSearchCriteria needs to be overridden. Is being called in BasePlatform');
+		throw new Error('getSearchCriteriaFromShareURL needs to be overridden. Is being called in BasePlatform');
 	}
 
 	async ensurePodcastEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<any> {

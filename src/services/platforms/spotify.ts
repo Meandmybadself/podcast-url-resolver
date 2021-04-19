@@ -51,24 +51,6 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 		this._id = 'spotify';
 	}
 
-	static async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
-		// The ID is in the URL.
-		// https://open.spotify.com/episode/5HRnuTXDQOz3eRdtKy0Ttq?si=grLMO2UkQ-aJe0rTg8gmqA
-		const platformPodcastId = BasePlatformClient.getRegExpMatch(shareURL, /episode\/([^?]+)/);
-		if (platformPodcastId) {
-			const data = await Spotify._getWithToken(`https://api.spotify.com/v1/episodes?ids=${platformPodcastId}?market=US`);
-			const podcastTitle = normalizeText(data.show.name);
-			const episodeTitle = normalizeText(data.name);
-			return {
-				podcastTitle,
-				episodeTitle,
-				platformPodcastId
-			};
-		}
-
-		console.log('Could not find Spotify episode id in URL', shareURL);
-	}
-
 	static async getEpisode(spotifyPodcastId: string, episodeTitle: string, offset = 0): Promise<SpotifyEpisode | void> {
 		const limit = 50;
 		const url = `https://api.spotify.com/v1/shows/${spotifyPodcastId}/episodes?market=US&limit=${limit}&offset=${offset}`;
@@ -164,6 +146,24 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 		if (podcastId) {
 			return `https://open.spotify.com/show/${podcastId}`;
 		}
+	}
+
+	async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
+		// The ID is in the URL.
+		// https://open.spotify.com/episode/5HRnuTXDQOz3eRdtKy0Ttq?si=grLMO2UkQ-aJe0rTg8gmqA
+		const platformPodcastId = BasePlatformClient.getRegExpMatch(shareURL, /episode\/([^?]+)/);
+		if (platformPodcastId) {
+			const data = await Spotify._getWithToken(`https://api.spotify.com/v1/episodes?ids=${platformPodcastId}?market=US`);
+			const podcastTitle = normalizeText(data.show.name);
+			const episodeTitle = normalizeText(data.name);
+			return {
+				podcastTitle,
+				episodeTitle,
+				platformPodcastId
+			};
+		}
+
+		console.log('Could not find Spotify episode id in URL', shareURL);
 	}
 
 	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
