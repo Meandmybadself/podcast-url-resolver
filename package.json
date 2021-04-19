@@ -14,11 +14,12 @@
     "lint:tsc": "tsc",
     "lint:xo": "xo --fix",
     "start": "node dist/index.js",
-    "postinstall": "tsc",
+    "postinstall": "tsc && npm run copy:files",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
     "kill:debugger": "kill -9 $(lsof -t -i tcp:9229)",
-    "test:startup": "PREPUSH_CHECK=1 ts-node src/index.ts"
+    "test:startup": "PREPUSH_CHECK=1 ts-node src/index.ts",
+    "copy:files": "cp -R src/public dist/"
   },
   "dependencies": {
     "axios": "^0.21.1",
