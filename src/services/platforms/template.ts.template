@@ -1,0 +1,26 @@
+import { ICanonicalEpisode, ICanonicalPodcast, IPlatformClient, ISearchCriteria } from "../../interfaces";
+import BasePlatformClient from "./base-platform";
+
+export default class TemplateClient extends BasePlatformClient implements IPlatformClient {
+  _id: string
+
+  constructor() {
+    super()
+    this._id = ""
+  }
+
+  static async fetchPodcastURLByTitle(title: string): Promise<string | void> {
+    console.log('fetchPodcastURLByTitle', title)
+  }
+
+  async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
+    console.log('getSearchCriteriaFromShareURL', shareURL)
+  }
+
+  async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
+    console.log('fetchPlatformEpisode', canonicalPodcast, canonicalEpisode)
+  }
+
+
+
+}

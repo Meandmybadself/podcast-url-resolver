@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {IPlatformClient, ISearchCriteria} from '../../interfaces';
+import {ICanonicalEpisode, ICanonicalPodcast, IPlatformClient, ISearchCriteria} from '../../interfaces';
 import BasePlatformClient from './base-platform';
 import cheerio from 'cheerio';
 import Apple from './apple';
@@ -74,7 +74,7 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 		console.log('🔒 Signed into Overcast');
 	}
 
-	async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | null> {
+	async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
 		try {
 			const {data} = await this._axiosInstance.get(shareURL);
 			const $ = cheerio.load(data);
@@ -92,7 +92,7 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 		}
 	}
 
-	async fetchPlatformEpisode(canonicalPodcast: any, canonicalEpisode: any): Promise<void> {
+	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
 		const platformId = await this.getPlatformId();
 
 		// There isn't any cost-savings in persisting just the podcast id in the db here, because when you query overcast, you get all episodes
@@ -113,7 +113,6 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 					.find(element => makeSearchSafeString(element.title) === makeSearchSafeString(canonicalEpisode.title));
 
 				if (episode) {
-					console.log('Found overcast episode. Inserting.');
 					await PlatformEpisode.findOrCreate({
 						where: {
 							platformId,
