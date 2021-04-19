@@ -64,6 +64,9 @@
     }
   },
   "xo": {
+    "ignores": [
+      "src/public/static/**/*"
+    ],
     "rules": {
       "no-new": 0,
       "new-cap": 0,
