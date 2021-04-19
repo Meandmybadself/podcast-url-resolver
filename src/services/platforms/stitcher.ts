@@ -68,6 +68,8 @@ interface IStitcherEpisode {
 	slug: string;
 }
 
+const sanitizeStitcherQuery = (string: string): string => string.replace(/[^a-z|\s]/gi, '');
+
 export default class Stitcher extends BasePlatformClient implements IPlatformClient {
 	_id: string;
 
@@ -77,7 +79,7 @@ export default class Stitcher extends BasePlatformClient implements IPlatformCli
 	}
 
 	static async _searchForPodcast(title: string): Promise<IStitcherPodcast | void> {
-		const {data} = await BasePlatformClient.getPageData(`https://api.prod.stitcher.com/search/shows?query=${encodeURI(title)}&count=10`);
+		const {data} = await BasePlatformClient.getPageData(`https://api.prod.stitcher.com/search/shows?query=${encodeURI(sanitizeStitcherQuery(title))}&count=10`);
 		if (data?.shows?.length) {
 			const searchTitle = makeSearchSafeString(title);
 			const matchingShow: IStitcherPodcast | undefined = find(data.shows, (show: IStitcherPodcast) => makeSearchSafeString(show.title) === searchTitle);
@@ -121,7 +123,7 @@ export default class Stitcher extends BasePlatformClient implements IPlatformCli
 			}).then(([entity]) => entity.get({plain: true}));
 
 			if (platformPodcast) {
-				const {data} = await BasePlatformClient.getPageData(`https://api.prod.stitcher.com/search/episodes?query=${encodeURI(canonicalEpisode.title)}&count=100&offset=0`);
+				const {data} = await BasePlatformClient.getPageData(`https://api.prod.stitcher.com/search/episodes?query=${encodeURI(sanitizeStitcherQuery(canonicalEpisode.title))}&count=100&offset=0`);
 				if (data?.shows) {
 					const episodeTitle: string = makeSearchSafeString(canonicalEpisode.title);
 					const episodeMatch: IStitcherPodcast | undefined = find(data.episodes, (episode: IStitcherEpisode) => makeSearchSafeString(episode.title) === episodeTitle && episode.show_id === stitcherPodcast.id);

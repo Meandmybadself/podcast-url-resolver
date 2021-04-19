@@ -98,6 +98,7 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 		// There isn't any cost-savings in persisting just the podcast id in the db here, because when you query overcast, you get all episodes
 		const podcastURL: string | void = await Overcast.fetchPodcastURLByTitle(canonicalPodcast.title);
 		if (podcastURL) {
+			console.log('Found Overcast episode URL', podcastURL);
 			let response: AxiosResponse;
 			try {
 				response = await this._axiosInstance.get(podcastURL);
@@ -113,6 +114,7 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 					.find(element => makeSearchSafeString(element.title) === makeSearchSafeString(canonicalEpisode.title));
 
 				if (episode) {
+					console.log('Found Overcast episode', episode.overcastId);
 					await PlatformEpisode.findOrCreate({
 						where: {
 							platformId,

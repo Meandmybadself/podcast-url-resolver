@@ -153,7 +153,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 		// https://open.spotify.com/episode/5HRnuTXDQOz3eRdtKy0Ttq?si=grLMO2UkQ-aJe0rTg8gmqA
 		const platformPodcastId = BasePlatformClient.getRegExpMatch(shareURL, /episode\/([^?]+)/);
 		if (platformPodcastId) {
-			const data = await Spotify._getWithToken(`https://api.spotify.com/v1/episodes?ids=${platformPodcastId}?market=US`);
+			const data = await Spotify._getWithToken(`https://api.spotify.com/v1/episodes/${platformPodcastId}?market=US`);
 			const podcastTitle = normalizeText(data.show.name);
 			const episodeTitle = normalizeText(data.name);
 			return {
@@ -205,7 +205,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 			const platformEpisode = await Spotify.getEpisode(platformPodcast.platformPodcastId, canonicalEpisode.title);
 
 			if (platformEpisode) {
-				console.log('Found Spotify episode');
+				console.log('Found Spotify episode', platformEpisode.id);
 				await PlatformEpisode.create({
 					podcastId: canonicalPodcast.id,
 					platformId,

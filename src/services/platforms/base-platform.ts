@@ -8,10 +8,16 @@ export default class BasePlatformClient implements IPlatformClient {
 	_id: string;
 
 	static async getPageData(url: string): Promise<any> {
-		return (await axios.get(url)).data;
+		console.log('getPageData', url);
+		try {
+			return (await axios.get(url)).data;
+		} catch (error: unknown) {
+			console.error(`Error while attempting to load: ${url}`, error);
+		}
 	}
 
 	static async getPageDOM(url: string): Promise<any> {
+		console.log('getPageDOM', url);
 		const data = await BasePlatformClient.getPageData(url);
 		return cheerio.load(data);
 	}
