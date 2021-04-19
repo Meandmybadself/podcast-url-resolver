@@ -20,10 +20,13 @@ const initializeBaseTables = async () => {
 	await Platform.create({name: 'Overcast', platformId: 'overcast'});
 	await Platform.create({name: 'Apple Podcasts', platformId: 'apple'});
 	await Platform.create({name: 'Spotify', platformId: 'spotify'});
+	await Platform.create({name: 'Stitcher', platformId: 'stitcher'});
 
 	await PlatformHost.create({hostname: 'overcast.fm', platformId: 1});
 	await PlatformHost.create({hostname: 'podcasts.apple.com', platformId: 2});
 	await PlatformHost.create({hostname: 'open.spotify.com', platformId: 3});
+	await PlatformHost.create({hostname: 'www.stitcher.com', platformId: 4});
+	await PlatformHost.create({hostname: 'stitcher.com', platformId: 4});
 };
 
 (async () => {

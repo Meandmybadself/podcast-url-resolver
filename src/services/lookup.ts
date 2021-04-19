@@ -17,12 +17,14 @@ import Apple from './platforms/apple';
 import Spotify from './platforms/spotify';
 import PlatformEpisode from '../models/platform-episode';
 import PlatformData from './platform-data';
+import Stitcher from './platforms/stitcher';
 
 // Instantiate platform clients
 const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
 	overcast: new Overcast(),
 	apple: new Apple(),
-	spotify: new Spotify()
+	spotify: new Spotify(),
+	stitcher: new Stitcher()
 };
 
 const podcastIndexAPI = PodcastIndexAPI(process.env.PODCASTINDEX_KEY, process.env.PODCASTINDEX_SECRET);
@@ -284,6 +286,9 @@ export const lookupPodcastByFeedURL = async (feedURL: string): Promise<Record<st
 				case 'spotify':
 					feedURL = await Spotify.fetchPodcastURLByTitle(canonicalPodcast.title);
 					break;
+				case 'stitcher':
+					feedURL = await Stitcher.fetchPodcastURLByTitle(canonicalPodcast.title);
+					break;
 				default:
 					console.log('Unrecognized platformId', platformId);
 					break;
@@ -327,17 +332,22 @@ const getThirdPartyPlatformEpisodeURLs = async (canonicalPodcast: ICanonicalPodc
 			throw new Error(`Unable to lookup episode platform: ${platformEpisode.platformId}`);
 		}
 
+		let platformPodcastId: string;
 		switch (platform.platformId) {
 			case 'overcast':
 				thirdPartyURLs[platform.platformId] = `https://overcast.fm${platformEpisode.platformEpisodeId}`;
 				break;
 			case 'apple':
 				// Look up platform episode id.
-				const platformPodcast = await PlatformPodcast.findOne({where: {platformId: platformEpisode.platformId}}); // eslint-disable-line no-case-declarations
-				thirdPartyURLs[platform.platformId] = `https://podcasts.apple.com/us/podcast/a/id${platformPodcast.platformPodcastId}?i=${platformEpisode.platformEpisodeId}`;
+				platformPodcastId = (await PlatformPodcast.findOne({where: {platformId: platformEpisode.platformId, canonicalPodcastId: canonicalPodcast.id}})).platformPodcastId;
+				thirdPartyURLs[platform.platformId] = `https://podcasts.apple.com/us/podcast/a/id${platformPodcastId}?i=${platformEpisode.platformEpisodeId}`;
 				break;
 			case 'spotify':
 				thirdPartyURLs[platform.platformId] = `https://open.spotify.com/episode/${platformEpisode.platformEpisodeId}`;
+				break;
+			case 'stitcher':
+				platformPodcastId = (await PlatformPodcast.findOne({where: {platformId: platformEpisode.platformId, canonicalPodcastId: canonicalPodcast.id}})).platformPodcastId;
+				thirdPartyURLs[platform.platformId] = `https://www.stitcher.com/show/${platformPodcastId}/episode/${platformEpisode.platformEpisodeId}`;
 				break;
 			default:
 				console.log('Unrecognized platform id', platform.platformId);

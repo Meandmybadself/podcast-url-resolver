@@ -1,4 +1,4 @@
-import {Model, Column, Table, BelongsTo, ForeignKey, Index} from 'sequelize-typescript';
+import {Model, Column, Table, BelongsTo, ForeignKey, Index, NotNull} from 'sequelize-typescript';
 import {Optional} from 'sequelize';
 import CanonicalEpisode from './00-canonical-episode';
 import Platform from './00-platform';

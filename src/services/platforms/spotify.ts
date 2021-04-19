@@ -92,6 +92,8 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 			return Spotify._token;
 		}
 
+		console.log('Getting spotify token.');
+
 		try {
 			const headers = {
 				headers: {
@@ -117,6 +119,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 			const result: SpotifyResult = response?.data;
 			Spotify._tokenExpiry = now() + result.expires_in;
 			Spotify._token = result.access_token;
+			console.log('Received Spotify token.');
 		} catch (error: unknown) {
 			console.log('Error while getting token from Spotify', error);
 		}
