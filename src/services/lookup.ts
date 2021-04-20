@@ -18,13 +18,15 @@ import Spotify from './platforms/spotify';
 import PlatformEpisode from '../models/platform-episode';
 import PlatformData from './platform-data';
 import Stitcher from './platforms/stitcher';
+import Pocketcasts from './platforms/pocketcasts';
 
 // Instantiate platform clients
 const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
 	overcast: new Overcast(),
 	apple: new Apple(),
 	spotify: new Spotify(),
-	stitcher: new Stitcher()
+	stitcher: new Stitcher(),
+	pocketcasts: new Pocketcasts()
 };
 
 const podcastIndexAPI = PodcastIndexAPI(process.env.PODCASTINDEX_KEY, process.env.PODCASTINDEX_SECRET);
@@ -96,7 +98,7 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 					const podcastTitleMatch: IPodcastIndexPodcast | undefined = find(podcastIndexResult.feeds, podcast => makeSearchSafeString(podcast.title) === podcastSearchTitle);
 
 					if (podcastTitleMatch) {
-						console.log('Found a podcastindex podcast using search strings', podcastTitleMatch.title);
+						console.log('Found a podcastindex podcast.');
 						// We're presuming that the first match is the correct match.
 						// If this turns out to not be the case, do some string comparison checking.
 						// We only need the feed URL.
@@ -289,6 +291,9 @@ export const lookupPodcastByFeedURL = async (feedURL: string): Promise<Record<st
 				case 'stitcher':
 					feedURL = await Stitcher.fetchPodcastURLByTitle(canonicalPodcast.title);
 					break;
+				case 'pocketcasts':
+					feedURL = await Pocketcasts.fetchPodcastURLByTitle(canonicalPodcast.title);
+					break;
 				default:
 					console.log('Unrecognized platformId', platformId);
 					break;
@@ -348,6 +353,9 @@ const getThirdPartyPlatformEpisodeURLs = async (canonicalPodcast: ICanonicalPodc
 			case 'stitcher':
 				platformPodcastId = (await PlatformPodcast.findOne({where: {platformId: platformEpisode.platformId, canonicalPodcastId: canonicalPodcast.id}})).platformPodcastId;
 				thirdPartyURLs[platform.platformId] = `https://www.stitcher.com/show/${platformPodcastId}/episode/${platformEpisode.platformEpisodeId}`;
+				break;
+			case 'pocketcasts':
+				thirdPartyURLs[platform.platformId] = `https://pca.st/episode/${platformEpisode.platformEpisodeId}`;
 				break;
 			default:
 				console.log('Unrecognized platform id', platform.platformId);
