@@ -19,6 +19,7 @@ import PlatformEpisode from '../models/platform-episode';
 import PlatformData from './platform-data';
 import Stitcher from './platforms/stitcher';
 import Pocketcasts from './platforms/pocketcasts';
+import PodcastAddict from './platforms/podcast-addict';
 
 // Instantiate platform clients
 const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
@@ -26,7 +27,8 @@ const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
 	apple: new Apple(),
 	spotify: new Spotify(),
 	stitcher: new Stitcher(),
-	pocketcasts: new Pocketcasts()
+	pocketcasts: new Pocketcasts(),
+	podcastaddict: new PodcastAddict()
 };
 
 const podcastIndexAPI = PodcastIndexAPI(process.env.PODCASTINDEX_KEY, process.env.PODCASTINDEX_SECRET);
@@ -294,6 +296,9 @@ export const lookupPodcastByFeedURL = async (feedURL: string): Promise<Record<st
 				case 'pocketcasts':
 					feedURL = await Pocketcasts.fetchPodcastURLByTitle(canonicalPodcast.title);
 					break;
+				case 'podcastaddict':
+					feedURL = await PodcastAddict.fetchPodcastURLByTitle(canonicalPodcast.title);
+					break;
 				default:
 					console.log('Unrecognized platformId', platformId);
 					break;
@@ -356,6 +361,9 @@ const getThirdPartyPlatformEpisodeURLs = async (canonicalPodcast: ICanonicalPodc
 				break;
 			case 'pocketcasts':
 				thirdPartyURLs[platform.platformId] = `https://pca.st/episode/${platformEpisode.platformEpisodeId}`;
+				break;
+			case 'podcastaddict':
+				thirdPartyURLs[platform.platformId] = `https://podcastaddict.com/episode/${platformEpisode.platformEpisodeId}`;
 				break;
 			default:
 				console.log('Unrecognized platform id', platform.platformId);
