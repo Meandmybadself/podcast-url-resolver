@@ -76,8 +76,8 @@ export default class PodcastAddict extends BasePlatformClient implements IPlatfo
 						await PlatformEpisode.findOrCreate({
 							where: {
 								platformId,
-								podcastId: canonicalPodcast.id,
-								episodeId: canonicalEpisode.id,
+								canonicalPodcastId: canonicalPodcast.id,
+								canonicalEpisodeId: canonicalEpisode.id,
 								platformEpisodeId
 							}
 						});
