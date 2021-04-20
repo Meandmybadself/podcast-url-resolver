@@ -11,7 +11,7 @@ export default class BasePlatformClient implements IPlatformClient {
 		try {
 			return (await axios.get(url)).data;
 		} catch (error: unknown) {
-			console.error(`Error while attempting to load: ${url}`, error);
+			console.error(`🚨 Error while attempting to load: ${url}`, error);
 		}
 	}
 
@@ -23,7 +23,7 @@ export default class BasePlatformClient implements IPlatformClient {
 	static getRegExpMatch(string: string, regex: RegExp): string | void {
 		const matches = regex.exec(string);
 
-		if (matches && matches[1]) { // eslint-disable-line @typescript-eslint/prefer-optional-chain
+		if (matches?.[1]) {
 			return matches[1];
 		}
 
@@ -50,8 +50,8 @@ export default class BasePlatformClient implements IPlatformClient {
 		// See if we already have the platform episode.
 		const ep = await PlatformEpisode.findOne({
 			where: {
-				episodeId: canonicalEpisode.id,
-				podcastId: canonicalPodcast.id,
+				canonicalEpisodeId: canonicalEpisode.id,
+				canonicalPodcastId: canonicalPodcast.id,
 				platformId
 			}
 		});

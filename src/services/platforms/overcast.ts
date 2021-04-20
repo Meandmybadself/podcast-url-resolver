@@ -118,8 +118,8 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 					await PlatformEpisode.findOrCreate({
 						where: {
 							platformId,
-							episodeId: canonicalEpisode.id,
-							podcastId: canonicalPodcast.id,
+							canonicalEpisodeId: canonicalEpisode.id,
+							canonicalPodcastId: canonicalPodcast.id,
 							platformEpisodeId: episode.overcastId
 						}
 					});

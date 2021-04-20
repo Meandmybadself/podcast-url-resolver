@@ -6,8 +6,8 @@ import CanonicalPodcast from './00-canonical-podcast';
 
 interface PlatformEpisodeAttributes {
 	id: number;
-	episodeId: number;
-	podcastId: number;
+	canonicalEpisodeId: number;
+	canonicalPodcastId: number;
 	platformId: number;
 	platformEpisodeId: string;
 }
@@ -19,17 +19,17 @@ interface PlatformEpisodeCreationAttributes extends Optional<PlatformEpisodeAttr
 })
 class PlatformEpisode extends Model<PlatformEpisodeAttributes, PlatformEpisodeCreationAttributes> {
 	@BelongsTo(() => CanonicalEpisode)
-	episode!: CanonicalEpisode;
+	canonicalEpisode!: CanonicalEpisode;
 
 	@ForeignKey(() => CanonicalEpisode)
-	episodeId: number;
+	canonicalEpisodeId: number;
 
 	// This is necessary for the platforms that don't have notions of podcasts (overcast)
 	@BelongsTo(() => CanonicalPodcast)
-	podcast!: CanonicalPodcast;
+	canonicalPodcast!: CanonicalPodcast;
 
 	@ForeignKey(() => CanonicalPodcast)
-	podcastId!: number;
+	canonicalPodcastId!: number;
 
 	@BelongsTo(() => Platform)
 	platform!: Platform;

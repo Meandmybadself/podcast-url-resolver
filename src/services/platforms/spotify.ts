@@ -173,7 +173,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 		const platformEpisode: any = await PlatformEpisode.findOne({
 			where: {
 				platformId,
-				episodeId: canonicalEpisode.id
+				canonicalEpisodeId: canonicalEpisode.id
 			}
 		});
 
@@ -207,9 +207,9 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 			if (platformEpisode) {
 				console.log('Found Spotify episode', platformEpisode.id);
 				await PlatformEpisode.create({
-					podcastId: canonicalPodcast.id,
+					canonicalPodcastId: canonicalPodcast.id,
 					platformId,
-					episodeId: canonicalEpisode.id,
+					canonicalEpisodeId: canonicalEpisode.id,
 					platformEpisodeId: platformEpisode.id
 				});
 

@@ -20,6 +20,7 @@ import PlatformData from './platform-data';
 import Stitcher from './platforms/stitcher';
 import Pocketcasts from './platforms/pocketcasts';
 import PodcastAddict from './platforms/podcast-addict';
+import IHeartRadio from './platforms/iheartradio';
 
 // Instantiate platform clients
 const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
@@ -28,7 +29,8 @@ const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
 	spotify: new Spotify(),
 	stitcher: new Stitcher(),
 	pocketcasts: new Pocketcasts(),
-	podcastaddict: new PodcastAddict()
+	podcastaddict: new PodcastAddict(),
+	iheartradio: new IHeartRadio()
 };
 
 const podcastIndexAPI = PodcastIndexAPI(process.env.PODCASTINDEX_KEY, process.env.PODCASTINDEX_SECRET);
@@ -141,7 +143,7 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 					// We have a canonical record of this podcast in the database.
 					// Do we have a canonical record of the episode?
 					const episodeSearchTitle: string = makeSearchSafeString(searchCriteria.episodeTitle);
-					canonicalEpisode = (await CanonicalEpisode.findOne({where: {searchTitle: episodeSearchTitle, podcastId: canonicalPodcast.id}, plain: true}));
+					canonicalEpisode = (await CanonicalEpisode.findOne({where: {searchTitle: episodeSearchTitle, canonicalPodcastId: canonicalPodcast.id}, plain: true}));
 
 					if (!canonicalEpisode) {
 						console.log('No canonical episode in DB. Looking up.');
@@ -165,7 +167,7 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
 								canonicalEpisode = await CanonicalEpisode.create({
 									title: feedCanonicalEpisode.title,
 									searchTitle: makeSearchSafeString(feedCanonicalEpisode.title),
-									podcastId: canonicalPodcast.id,
+									canonicalPodcastId: canonicalPodcast.id,
 									description: feedCanonicalEpisode.description,
 									publishDate: new Date(feedCanonicalEpisode.published),
 									episodeType: feedCanonicalEpisode.episodeType,
@@ -221,7 +223,7 @@ const getEpisodeByShareURL = async (platformEpisodeURL: string) => {
 		if (canonicalEpisode) {
 			const canonicalPodcast = (await CanonicalPodcast.findOne({
 				where: {
-					id: canonicalEpisode.podcastId
+					id: canonicalEpisode.canonicalPodcastId
 				},
 				plain: true
 			}))?.get({plain: true});
@@ -299,6 +301,9 @@ export const lookupPodcastByFeedURL = async (feedURL: string): Promise<Record<st
 				case 'podcastaddict':
 					feedURL = await PodcastAddict.fetchPodcastURLByTitle(canonicalPodcast.title);
 					break;
+				case 'iheartradio':
+					feedURL = await PodcastAddict.fetchPodcastURLByTitle(canonicalPodcast.title);
+					break;
 				default:
 					console.log('Unrecognized platformId', platformId);
 					break;
@@ -324,7 +329,7 @@ const getThirdPartyPlatformEpisodeURLs = async (canonicalPodcast: ICanonicalPodc
 	// Associate platform episodes.
 	const platformEpisodes = (await PlatformEpisode.findAll({
 		where: {
-			episodeId: canonicalEpisode.id
+			canonicalEpisodeId: canonicalEpisode.id
 		},
 		attributes: [
 			'platformEpisodeId',
@@ -364,6 +369,10 @@ const getThirdPartyPlatformEpisodeURLs = async (canonicalPodcast: ICanonicalPodc
 				break;
 			case 'podcastaddict':
 				thirdPartyURLs[platform.platformId] = `https://podcastaddict.com/episode/${platformEpisode.platformEpisodeId}`;
+				break;
+			case 'iheartradio':
+				platformPodcastId = (await PlatformPodcast.findOne({where: {platformId: platformEpisode.platformId, canonicalPodcastId: canonicalPodcast.id}})).platformPodcastId;
+				thirdPartyURLs[platform.platformId] = `https://www.iheart.com/podcast/${platformPodcastId}/episode/${platformEpisode.platformEpisodeId}/`;
 				break;
 			default:
 				console.log('Unrecognized platform id', platform.platformId);

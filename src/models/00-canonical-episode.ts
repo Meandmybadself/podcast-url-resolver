@@ -16,10 +16,10 @@ class CanonicalEpisode extends Model<ICanonicalEpisode, EpisodeCreationAttribute
 	searchTitle!: string;
 
 	@BelongsTo(() => CanonicalPodcast)
-	podcast: CanonicalPodcast;
+	canonicalPodcast: CanonicalPodcast;
 
 	@ForeignKey(() => CanonicalPodcast)
-	podcastId: number;
+	canonicalPodcastId: number;
 
 	@Column({
 		type: DataTypes.TEXT

@@ -91,8 +91,8 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 		const platformEpisode = await PlatformEpisode.findOne({
 			where: {
 				platformId,
-				podcastId: canonicalPodcast.id,
-				episodeId: canonicalEpisode.id
+				canonicalPodcastId: canonicalPodcast.id,
+				canonicalEpisodeId: canonicalEpisode.id
 			}
 		});
 
@@ -122,10 +122,10 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 				if (matchingEpisode) {
 					console.log(`Pocket Casts - creating episode: ${matchingEpisode.uuid}`);
 					await PlatformEpisode.create({
-						episodeId: canonicalEpisode.id,
+						canonicalEpisodeId: canonicalEpisode.id,
 						platformId,
 						platformEpisodeId: matchingEpisode.uuid,
-						podcastId: canonicalPodcast.id
+						canonicalPodcastId: canonicalPodcast.id
 					});
 				}
 			} else {

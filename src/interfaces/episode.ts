@@ -6,7 +6,7 @@ export interface ICanonicalEpisode {
 	enclosureURL?: string;
 	episodeType?: string;
 	guid: string;
-	podcastId: number;
+	canonicalPodcastId: number;
 	publishDate: Date;
 	searchTitle: string;
 	title: string;

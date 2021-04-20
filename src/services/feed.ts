@@ -116,7 +116,7 @@ export const loadAndUpsertFeed = async (feedURL: string): Promise<ICanonicalPodc
 						enclosureURL: enclosure.url,
 						episodeType,
 						guid,
-						podcastId: canonicalPodcast.id,
+						canonicalPodcastId: canonicalPodcast.id,
 						publishDate,
 						searchTitle: makeSearchSafeString(title),
 						title

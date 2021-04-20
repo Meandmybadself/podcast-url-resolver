@@ -130,9 +130,9 @@ export default class Stitcher extends BasePlatformClient implements IPlatformCli
 					if (episodeMatch) {
 						await PlatformEpisode.findOrCreate({
 							where: {
-								episodeId: canonicalEpisode.id,
+								canonicalEpisodeId: canonicalEpisode.id,
 								platformId,
-								podcastId: canonicalPodcast.id,
+								canonicalPodcastId: canonicalPodcast.id,
 								platformEpisodeId: episodeMatch.slug
 							}
 						});

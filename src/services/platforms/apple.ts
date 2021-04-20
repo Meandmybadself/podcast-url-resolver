@@ -96,8 +96,8 @@ export default class Apple extends BasePlatformClient implements IPlatformClient
 				try {
 					await PlatformEpisode.create({
 						platformId,
-						episodeId: canonicalEpisode.id,
-						podcastId: canonicalPodcast.id,
+						canonicalEpisodeId: canonicalEpisode.id,
+						canonicalPodcastId: canonicalPodcast.id,
 						platformEpisodeId: episode.trackId
 					});
 				} catch (error: unknown) {
