@@ -8,7 +8,6 @@ export default class BasePlatformClient implements IPlatformClient {
 	_id: string;
 
 	static async getPageData(url: string): Promise<any> {
-		console.log('getPageData', url);
 		try {
 			return (await axios.get(url)).data;
 		} catch (error: unknown) {
@@ -17,7 +16,6 @@ export default class BasePlatformClient implements IPlatformClient {
 	}
 
 	static async getPageDOM(url: string): Promise<any> {
-		console.log('getPageDOM', url);
 		const data = await BasePlatformClient.getPageData(url);
 		return cheerio.load(data);
 	}
