@@ -4,6 +4,7 @@ import {Sequelize} from 'sequelize-typescript';
 import path from 'path';
 import Platform from './models/00-platform';
 import PlatformHost from './models/platform-host';
+import User from './models/user';
 
 const sequelize = new Sequelize({
 	dialect: 'postgres',
@@ -34,6 +35,9 @@ const initializeBaseTables = async () => {
 	await PlatformHost.create({hostname: 'pca.st', platformId: 5});
 	await PlatformHost.create({hostname: 'podcastaddict.com', platformId: 5});
 	await PlatformHost.create({hostname: 'iheart.com', platformId: 6});
+
+	await User.create({email: 'meandmybadself@gmail.com', role: 'admin'});
+	await User.create({email: 'hello@nathangathright.com', role: 'admin'});
 };
 
 (async () => {
