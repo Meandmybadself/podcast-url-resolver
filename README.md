@@ -28,3 +28,4 @@
 
 * We went with a JSON response instead of GQL because we believe that it will primarily be server-side services consuming this API.
 * Not storing Google Podcasts explicitly, as they can be derived from canonical feed information.
+* Not allowing creation of platforms via API because they will most likely have code dependencies that cannot be satistied.

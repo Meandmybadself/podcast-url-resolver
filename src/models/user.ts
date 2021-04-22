@@ -1,9 +1,20 @@
-import {Model, Column, Table} from 'sequelize-typescript';
+import {Model, Column, Table, Unique} from 'sequelize-typescript';
+import {Optional} from 'sequelize/types';
+
+interface IUser {
+	id?: number;
+	email: string;
+	role: 'user' | 'admin' | 'tester';
+	deletedAt?: Date;
+}
+
+interface UserCreationAttributes extends Optional<IUser, 'id'> { }
 
 @Table({
 	paranoid: true
 })
-class User extends Model<User> {
+class User extends Model<IUser, UserCreationAttributes> {
+	@Unique
 	@Column({
 		validate: {
 			isEmail: true
@@ -12,10 +23,7 @@ class User extends Model<User> {
 	email!: string;
 
 	@Column
-	secret!: string;
-
-	@Column
-	role: 'user' | 'admin';
+	role: 'user' | 'admin' | 'tester';
 }
 export default User;
 
