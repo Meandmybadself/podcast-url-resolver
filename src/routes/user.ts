@@ -139,7 +139,7 @@ const routes = (router: Router) => {
 	});
 	router.get('/users', requiresAdmin, async (_request: Request, response: Response) => {
 		const result: any = await sequelize.model('User').findAll({
-			attributes: ['email', 'role', 'secret']
+			attributes: ['email', 'role']
 		});
 		return response.status(200).json({
 			message: 'ok',

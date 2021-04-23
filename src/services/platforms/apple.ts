@@ -1,4 +1,3 @@
-import {AxiosInstance} from 'axios';
 import {ICanonicalEpisode, ICanonicalPodcast, IPlatformClient, ISearchCriteria} from '../../interfaces';
 import BasePlatformClient from './base-platform';
 import {some, find} from 'lodash';
@@ -9,7 +8,6 @@ import PlatformEpisodeURL from '../../models/platform-episode-url';
 
 export default class Apple extends BasePlatformClient implements IPlatformClient {
 	_id: string;
-	_axiosInstance: AxiosInstance;
 
 	constructor() {
 		super();

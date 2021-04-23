@@ -10,37 +10,41 @@ import https from 'https';
 
 // Go get an auth cookie with a raw https request, like the amish did.
 const getAuthCookie = async () => new Promise((resolve, reject) => {
-	const request = https.request({
-		host: 'overcast.fm',
-		path: '/login',
-		port: 443,
-		method: 'POST',
-		headers: {
-			'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:87.0) Gecko/20100101 Firefox/87.0',
-			accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-			'accept-language': 'en-US,en;q=0.5',
-			'accept-encoding': 'gzip, deflate, br',
-			'content-type': 'application/x-www-form-urlencoded',
-			'content-length': '134',
-			origin: 'https://overcast.fm',
-			dnt: '1',
-			referer: 'https://overcast.fm/login',
-			cookie: 'o=-',
-			'upgrade-insecure-requests': '1',
-			te: 'trailers'
-		}
-	}, response => {
-		const authCookie: string | void = BasePlatformClient.getRegExpMatch(response.headers['set-cookie'][0], /(o=[^;]+)/);
-		if (authCookie) {
-			resolve(authCookie);
-			return;
-		}
+	try {
+		const request = https.request({
+			host: 'overcast.fm',
+			path: '/login',
+			port: 443,
+			method: 'POST',
+			headers: {
+				'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:87.0) Gecko/20100101 Firefox/87.0',
+				accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+				'accept-language': 'en-US,en;q=0.5',
+				'accept-encoding': 'gzip, deflate, br',
+				'content-type': 'application/x-www-form-urlencoded',
+				'content-length': '134',
+				origin: 'https://overcast.fm',
+				dnt: '1',
+				referer: 'https://overcast.fm/login',
+				cookie: 'o=-',
+				'upgrade-insecure-requests': '1',
+				te: 'trailers'
+			}
+		}, response => {
+			const authCookie: string | void = BasePlatformClient.getRegExpMatch(response.headers['set-cookie'][0], /(o=[^;]+)/);
+			if (authCookie) {
+				resolve(authCookie);
+				return;
+			}
 
-		reject(new Error('Login to Overcast failed'));
-	});
+			reject(new Error('Login to Overcast failed'));
+		});
 
-	request.write(`then=podcasts&email=${process.env.OVERCAST_EMAIL}&password=${process.env.OVERCAST_PASSWORD}`);
-	request.end();
+		request.write(`then=podcasts&email=${process.env.OVERCAST_EMAIL}&password=${process.env.OVERCAST_PASSWORD}`);
+		request.end();
+	} catch {
+		console.error('🚨 Error while attempting to auth with Overcast.');
+	}
 });
 
 export default class Overcast extends BasePlatformClient implements IPlatformClient {
@@ -88,7 +92,7 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 				};
 			}
 		} catch (error: unknown) {
-			console.error('Error in getSearchCriteria', error);
+			console.error('Error in Overcast getSearchCriteria', error);
 		}
 	}
 

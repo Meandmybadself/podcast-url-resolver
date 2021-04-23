@@ -65,22 +65,26 @@ export default class PodcastAddict extends BasePlatformClient implements IPlatfo
 				if (matchingEpisodes.length > 0) {
 					const matchingEpisode = matchingEpisodes[0];
 
-					// This is a long URL that 301's to the real URL.
-					const {request} = await axios.get(matchingEpisode.attribs.href);
+					try {
+						// This is a long URL that 301's to the real URL.
+						const {request} = await axios.get(matchingEpisode.attribs.href);
 
-					const finalEpisodeURL: string = request.res.responseUrl;
+						const finalEpisodeURL: string = request.res.responseUrl;
 
-					const platformEpisodeId: string = finalEpisodeURL.replace('https://podcastaddict.com/episode/', '');
-					if (platformEpisodeId) {
-						console.log('Found a podcast addict episode', platformEpisodeId);
-						await PlatformEpisode.findOrCreate({
-							where: {
-								platformId,
-								canonicalPodcastId: canonicalPodcast.id,
-								canonicalEpisodeId: canonicalEpisode.id,
-								platformEpisodeId
-							}
-						});
+						const platformEpisodeId: string = finalEpisodeURL.replace('https://podcastaddict.com/episode/', '');
+						if (platformEpisodeId) {
+							console.log('Found a podcast addict episode', platformEpisodeId);
+							await PlatformEpisode.findOrCreate({
+								where: {
+									platformId,
+									canonicalPodcastId: canonicalPodcast.id,
+									canonicalEpisodeId: canonicalEpisode.id,
+									platformEpisodeId
+								}
+							});
+						}
+					} catch {
+						console.error('Error while attempting to load Podcast Addict episode');
 					}
 				}
 			}

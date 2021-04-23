@@ -63,7 +63,7 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 
 			console.log('Pocket Casts - No podcasts returned.');
 		} catch {
-			console.log('Pocket Casts - Error while fetching podcast', title);
+			console.error('Pocket Casts - Error while fetching podcast', title);
 		}
 	}
 

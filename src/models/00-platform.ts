@@ -18,12 +18,12 @@ class Platform extends Model<IPlatform, PlatformCreationAttributes> {
 	@Column
 	platformId!: string;
 
-	@HasMany(() => PlatformHost)
-	platformHosts: PlatformHost[];
-
 	@Index
 	@Default(true)
 	@Column
-	isActive!: boolean;
+	isActive: boolean;
+
+	@HasMany(() => PlatformHost)
+	platformHosts: PlatformHost[];
 }
 export default Platform;

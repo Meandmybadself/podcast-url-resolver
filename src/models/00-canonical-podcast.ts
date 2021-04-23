@@ -30,6 +30,7 @@ class CanonicalPodcast extends Model<ICanonicalPodcast, PodcastCreationAttribute
 	})
 	feedURL: string;
 
+	@AllowNull
 	@Column
 	explicit: boolean;
 

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import parsePodcast from 'node-podcast-parser';
 import axios from 'axios';
 import {IFeed} from '../interfaces/feed';
@@ -12,25 +10,31 @@ import CanonicalEpisode from '../models/00-canonical-episode';
 
 export const loadFeed = async (url: string): Promise<IFeed | void> => new Promise((resolve, reject) => {
 	try {
-		axios.get(url).then(({data}) => {
-			// Console.log('data', data)
-			parsePodcast(data, (error: unknown, feed: any) => {
-				if (error) {
-					reject(error);
-					return;
-				}
+		axios.get(url)
+			.then(({data}) => {
+				// Console.log('data', data)
+				parsePodcast(data, (error: unknown, feed: any) => {
+					if (error) {
+						reject(error);
+						return;
+					}
 
-				if (feed) {
-					// Don't need the numbers, just the string values.
-					feed.categories = Object.values(feed.categories);
-					resolve(feed);
-					return;
-				}
+					if (feed) {
+						// Don't need the numbers, just the string values.
+						feed.categories = Object.values(feed.categories);
+						resolve(feed);
+						return;
+					}
 
-				resolve();
+					resolve();
+				});
+			})
+			.catch((error: unknown) => {
+				console.error(`🚨 Error while attempting to load feed: ${url}`);
+				reject(error);
 			});
-		});
 	} catch (error: unknown) {
+		console.error(`🚨 Errow while attempting to load feed: ${url}`);
 		reject(error);
 	}
 });
