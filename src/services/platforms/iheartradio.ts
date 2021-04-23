@@ -1,6 +1,5 @@
 import {find} from 'lodash';
 import {ICanonicalEpisode, ICanonicalPodcast, IPlatformClient, ISearchCriteria} from '../../interfaces';
-import CanonicalEpisode from '../../models/00-canonical-episode';
 import PlatformEpisode from '../../models/platform-episode';
 import PlatformPodcast from '../../models/platform-podcast';
 import {makeSearchSafeString} from '../../utilities/string';

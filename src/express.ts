@@ -1,7 +1,8 @@
 import bodyParser from 'body-parser';
-import express, {Request, Response} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import errorhandler from 'strong-error-handler';
 import path from 'path';
+import cors from 'cors';
 
 import episodeRoutes from './routes/episode';
 import platformRoutes from './routes/platform';
@@ -10,6 +11,9 @@ import userRoutes from './routes/user';
 
 export const initExpress = () => {
 	const app = express();
+
+	app.use(cors());
+	app.options('*', cors());
 
 	const router = express.Router();
 

@@ -25,6 +25,7 @@
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.5",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
@@ -76,7 +77,8 @@
       "@typescript-eslint/dot-notation": 0,
       "max-depth": 0,
       "promise/prefer-await-to-then": 0,
-      "no-case-declarations": 0
+      "no-case-declarations": 0,
+      "@typescript-eslint/no-floating-promises": 0
     }
   },
   "eslintConfig": {
