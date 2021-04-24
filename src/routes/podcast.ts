@@ -5,8 +5,8 @@ import {requiresAuth} from './user';
 const routes = (router: Router) => {
 	router.get('/podcast/lookup/feed/:url(*)', requiresAuth, async (request: Request, response: Response) => {
 		try {
-			const episode = await lookupPodcastByFeedURL(request.params.url);
-			response.status(200).send({message: 'ok', episode});
+			const podcasts = await lookupPodcastByFeedURL(request.params.url);
+			response.status(200).send({message: 'ok', podcasts});
 		} catch {
 			response.status(500).send({message: 'error', details: 'Unable to lookup feed.'});
 		}
