@@ -5,6 +5,7 @@ import RequestAttempt from '../models/request-attempt';
 import moment from 'moment';
 import User from '../models/user';
 import {omit} from 'lodash';
+import logger from '../utilities/log';
 
 interface IUserPayload {
 	userId: number;
@@ -63,7 +64,7 @@ export const requiresAuth = async (request: Request, response: Response, next: N
 						next();
 						return;
 					default:
-						console.error('Unknown role type in payload', payload?.role);
+						logger.error('Unknown role type in payload.');
 						break;
 				}
 			}

@@ -2,6 +2,7 @@ import {find} from 'lodash';
 import {ICanonicalEpisode, ICanonicalPodcast, IPlatformClient, ISearchCriteria} from '../../interfaces';
 import PlatformEpisode from '../../models/platform-episode';
 import PlatformPodcast from '../../models/platform-podcast';
+import logger from '../../utilities/log';
 import {makeSearchSafeString} from '../../utilities/string';
 import BasePlatformClient from './base-platform';
 
@@ -50,6 +51,8 @@ export default class IHeartRadio extends BasePlatformClient implements IPlatform
 				return matchingPodcast;
 			}
 		}
+
+		logger.error(`Could not fetch iheartradio podcast by title: ${title}`);
 	}
 
 	static async fetchPodcastURLByTitle(title: string): Promise<string | void> {
@@ -77,6 +80,8 @@ export default class IHeartRadio extends BasePlatformClient implements IPlatform
 				};
 			}
 		}
+
+		logger.error(`Could not getSearchCriteria for iheartradio: ${shareURL}`);
 	}
 
 	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
@@ -109,6 +114,8 @@ export default class IHeartRadio extends BasePlatformClient implements IPlatform
 							canonicalEpisodeId: canonicalEpisode.id
 						}
 					});
+				} else {
+					logger.error(`Could not fetch platform episode for iheartradio - ${canonicalPodcast.title}: ${canonicalEpisode.title}`);
 				}
 			}
 		}

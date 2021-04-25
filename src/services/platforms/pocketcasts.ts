@@ -5,6 +5,8 @@ import BasePlatformClient from './base-platform';
 import {find} from 'lodash';
 import PlatformPodcast from '../../models/platform-podcast';
 import PlatformEpisode from '../../models/platform-episode';
+import logger from '../../utilities/log';
+import CanonicalEpisode from '../../models/00-canonical-episode';
 
 interface IPocketCastPodcastSearchResult {
 	uuid: string;
@@ -61,9 +63,9 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 				return searchRequest.data.result.search_results[0].uuid;
 			}
 
-			console.log('Pocket Casts - No podcasts returned.');
+			logger.error(`No podcasts returned from pocket casts search: ${title}`);
 		} catch {
-			console.error('Pocket Casts - Error while fetching podcast', title);
+			logger.error(`Error while fetching pocket casts podcast - ${title}`);
 		}
 	}
 
@@ -72,6 +74,8 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 		if (id) {
 			return `https://pca.st/podcast/${id}`;
 		}
+
+		logger.error(`Could not fetch pocketcast URL by title - ${title}`);
 	}
 
 	async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
@@ -79,10 +83,14 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 		const title: string[] = $('meta[property=\'og:title\']')[0].attribs.content.split(' - ');
 		const podcastTitle = title.pop();
 		const episodeTitle = normalizeText(title.join(' - '));
-		return {
-			podcastTitle,
-			episodeTitle
-		};
+		if (podcastTitle && episodeTitle) {
+			return {
+				podcastTitle,
+				episodeTitle
+			};
+		}
+
+		logger.error(`Could not get search criteria - pocketcasts - ${shareURL}`);
 	}
 
 	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
@@ -103,7 +111,7 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 		const pocketcastsPodcastId: string | void = await Pocketcasts.fetchPodcastIdByTitle(canonicalPodcast.title);
 
 		if (pocketcastsPodcastId) {
-			const platformPodcast = await PlatformPodcast.findOrCreate({
+			await PlatformPodcast.findOrCreate({
 				where: {
 					platformId,
 					canonicalPodcastId: canonicalPodcast.id,
@@ -127,9 +135,11 @@ export default class Pocketcasts extends BasePlatformClient implements IPlatform
 						platformEpisodeId: matchingEpisode.uuid,
 						canonicalPodcastId: canonicalPodcast.id
 					});
+				} else {
+					logger.error(`Could not find a platform episode – pocketcasts - ${canonicalPodcast.title}: ${canonicalEpisode.title}`);
 				}
 			} else {
-				console.log('Pocket Casts - No episodes returned');
+				logger.error(`Could not fetch platform episodes - pocketcasts - ${canonicalPodcast.title}: ${canonicalEpisode.title}`);
 			}
 		}
 	}

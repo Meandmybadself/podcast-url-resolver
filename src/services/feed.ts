@@ -7,6 +7,7 @@ import {makeSearchSafeString} from '../utilities/string';
 import Category from '../models/00-category';
 import CategoryToPodcast from '../models/category-to-podcast';
 import CanonicalEpisode from '../models/00-canonical-episode';
+import logger from '../utilities/log';
 
 export const loadFeed = async (url: string): Promise<IFeed | void> => new Promise((resolve, reject) => {
 	try {
@@ -30,11 +31,11 @@ export const loadFeed = async (url: string): Promise<IFeed | void> => new Promis
 				});
 			})
 			.catch((error: unknown) => {
-				console.error(`🚨 Error while attempting to load feed: ${url}`);
+				logger.error(`🚨 Error while attempting to load feed: ${url}`);
 				reject(error);
 			});
 	} catch (error: unknown) {
-		console.error(`🚨 Errow while attempting to load feed: ${url}`);
+		logger.error(`🚨 Errow while attempting to load feed: ${url}`);
 		reject(error);
 	}
 });

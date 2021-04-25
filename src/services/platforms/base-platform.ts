@@ -2,6 +2,7 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import {ICanonicalEpisode, ICanonicalPodcast, IPlatform, IPlatformClient, ISearchCriteria} from '../../interfaces';
 import PlatformEpisode from '../../models/platform-episode';
+import logger from '../../utilities/log';
 import PlatformData from '../platform-data';
 
 export default class BasePlatformClient implements IPlatformClient {
@@ -10,8 +11,8 @@ export default class BasePlatformClient implements IPlatformClient {
 	static async getPageData(url: string): Promise<any> {
 		try {
 			return (await axios.get(url)).data;
-		} catch (error: unknown) {
-			console.error(`🚨 Error while attempting to load: ${url}`, error);
+		} catch {
+			logger.error(`🚨 Error while attempting to load: ${url}`);
 		}
 	}
 
@@ -27,7 +28,7 @@ export default class BasePlatformClient implements IPlatformClient {
 			return matches[1];
 		}
 
-		console.error('Unable to find a regex match.', regex);
+		logger.error('Unable to find a regex match.', string);
 	}
 
 	async getPlatform(): Promise<IPlatform | null> {

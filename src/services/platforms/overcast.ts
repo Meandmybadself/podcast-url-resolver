@@ -7,6 +7,7 @@ import PlatformEpisode from '../../models/platform-episode';
 import PlatformEpisodeURL from '../../models/platform-episode-url';
 import {normalizeText, makeSearchSafeString} from '../../utilities/string';
 import https from 'https';
+import logger from '../../utilities/log';
 
 // Go get an auth cookie with a raw https request, like the amish did.
 const getAuthCookie = async () => new Promise((resolve, reject) => {
@@ -37,13 +38,14 @@ const getAuthCookie = async () => new Promise((resolve, reject) => {
 				return;
 			}
 
+			logger.error('Failed to authenticate with Overcast.');
 			reject(new Error('Login to Overcast failed'));
 		});
 
 		request.write(`then=podcasts&email=${process.env.OVERCAST_EMAIL}&password=${process.env.OVERCAST_PASSWORD}`);
 		request.end();
 	} catch {
-		console.error('🚨 Error while attempting to auth with Overcast.');
+		logger.error('Failed to authenticate with Overcast.');
 	}
 });
 
@@ -54,12 +56,11 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 	constructor() {
 		super();
 		this._id = 'overcast';
-
 		void this._performAuth();
 	}
 
 	static async fetchPodcastURLByTitle(title: string): Promise<string | void> {
-		const applePodcastId: string = await Apple.fetchPodcastByTitle(title);
+		const applePodcastId: string | void = await Apple.fetchPodcastByTitle(title);
 		if (applePodcastId) {
 			return `https://overcast.fm/itunes${applePodcastId}`;
 		}
@@ -91,8 +92,8 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 					episodeTitle
 				};
 			}
-		} catch (error: unknown) {
-			console.error('Error in Overcast getSearchCriteria', error);
+		} catch {
+			logger.error(`Failed to find Overcast searchCriteria: ${shareURL}`);
 		}
 	}
 
@@ -140,10 +141,9 @@ export default class Overcast extends BasePlatformClient implements IPlatformCli
 					const finalURL: string = response.request.res.responseUrl;
 					console.log(`URL: ${finalURL}`);
 				}
-			} catch (error: unknown) {
-				console.error('Error while trying to fetch Overcast episode', error);
+			} catch {
 				const finalURL: string = response.request.res.responseUrl;
-				console.log(`URL: ${finalURL}`);
+				logger.error(`Error while trying to fetch Overcast episode - ${canonicalPodcast.title}: ${canonicalEpisode.title} - ${finalURL}`);
 			}
 		}
 	}

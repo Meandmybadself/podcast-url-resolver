@@ -9,6 +9,8 @@ import platformRoutes from './routes/platform';
 import podcastRoutes from './routes/podcast';
 import userRoutes from './routes/user';
 
+import * as requestResponseMiddleware from './utilities/request-response';
+
 export const initExpress = () => {
 	const app = express();
 
@@ -16,6 +18,8 @@ export const initExpress = () => {
 	app.options('*', cors());
 
 	const router = express.Router();
+
+	app.use(requestResponseMiddleware.attachHelpers);
 
 	app.get('/', (_request: Request, response: Response) => {
 		response.redirect('/v1/');
