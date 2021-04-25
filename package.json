@@ -38,7 +38,9 @@
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",
-    "strong-error-handler": "^4.0.0"
+    "strong-error-handler": "^4.0.0",
+    "winston": "^3.3.3",
+    "winston-slack-webhook-transport": "^2.0.1"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
