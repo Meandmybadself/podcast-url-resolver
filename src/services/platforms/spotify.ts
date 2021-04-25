@@ -8,6 +8,7 @@ import {makeSearchSafeString, normalizeText} from '../../utilities/string';
 import {now} from '../../utilities/time';
 import BasePlatformClient from './base-platform';
 import qs from 'qs';
+import logger from '../../utilities/log';
 
 interface SpotifyResult {
 	access_token: string;
@@ -91,19 +92,19 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 				grant_type: 'client_credentials'
 			};
 
-			// Try {
-			const response = await axios.post(
-				'https://accounts.spotify.com/api/token',
-				qs.stringify(data),
-				headers
-			);
+			const response = await axios({
+				url: 'https://accounts.spotify.com/api/token',
+				data: qs.stringify(data),
+				headers,
+				timeout: 1000
+			});
 
 			const result: SpotifyResult = response?.data;
 			Spotify._tokenExpiry = now() + result.expires_in;
 			Spotify._token = result.access_token;
 			console.log('Received Spotify token.');
-		} catch (error: unknown) {
-			console.log('Error while getting token from Spotify', error);
+		} catch {
+			logger.error('Error while getting token from Spotify');
 		}
 	}
 
@@ -119,7 +120,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 
 				return rsp.data;
 			} catch (error: unknown) {
-				console.log('Error while loading Spotify content w/ token', url, error);
+				logger.error('Error while loading Spotify content w/ token', url, error);
 			}
 		}
 	}
@@ -163,7 +164,7 @@ export default class Spotify extends BasePlatformClient implements IPlatformClie
 			};
 		}
 
-		console.log('Could not find Spotify episode id in URL', shareURL);
+		logger.info('Could not find Spotify episode id in share URL', shareURL);
 	}
 
 	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {

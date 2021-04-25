@@ -5,6 +5,7 @@ import {initExpress} from './express';
 
 import jwt from 'jsonwebtoken';
 import User from './models/user';
+import logger from './utilities/log';
 
 (async () => {
 	try {
@@ -27,6 +28,7 @@ import User from './models/user';
 				});
 		}
 	} catch (error: unknown) {
+		logger.error('Error while starting service.');
 		console.error(error);
 	}
 })();

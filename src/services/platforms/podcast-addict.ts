@@ -5,6 +5,7 @@ import {makeSearchSafeString} from '../../utilities/string';
 import PlatformPodcast from '../../models/platform-podcast';
 import PlatformEpisode from '../../models/platform-episode';
 import axios from 'axios';
+import logger from '../../utilities/log';
 
 export default class PodcastAddict extends BasePlatformClient implements IPlatformClient {
 	_id: string;
@@ -27,14 +28,22 @@ export default class PodcastAddict extends BasePlatformClient implements IPlatfo
 		if (matchingPodcasts?.length) {
 			return matchingPodcasts[0];
 		}
+
+		logger.error(`Unable to fetch podcastaddict podcast url by title: ${title}`);
 	}
 
 	async getSearchCriteriaFromShareURL(shareURL: string): Promise<ISearchCriteria | void> {
 		const $ = await BasePlatformClient.getPageDOM(shareURL);
-		return {
-			podcastTitle: $('h1').text(),
-			episodeTitle: $('h4').text()
-		};
+		const podcastTitle: string = $('h1').text();
+		const episodeTitle: string = $('h4').text();
+		if (podcastTitle && episodeTitle) {
+			return {
+				podcastTitle,
+				episodeTitle
+			};
+		}
+
+		logger.error(`Could not get search criteria from podcast addict: ${shareURL}`);
 	}
 
 	async fetchPlatformEpisode(canonicalPodcast: ICanonicalPodcast, canonicalEpisode: ICanonicalEpisode): Promise<void> {
@@ -84,7 +93,7 @@ export default class PodcastAddict extends BasePlatformClient implements IPlatfo
 							});
 						}
 					} catch {
-						console.error('Error while attempting to load Podcast Addict episode');
+						logger.error(`Error while attempting to load Podcast Addict episode - ${canonicalPodcast.title}: ${canonicalEpisode.title}`);
 					}
 				}
 			}
