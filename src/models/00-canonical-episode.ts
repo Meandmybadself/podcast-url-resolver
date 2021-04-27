@@ -1,53 +1,72 @@
-import {Model, Column, Table, BelongsTo, Default, ForeignKey, AllowNull} from 'sequelize-typescript';
-import {DataTypes, Optional} from 'sequelize';
-import CanonicalPodcast from './00-canonical-podcast';
-import {ICanonicalEpisode} from '../interfaces';
+import {
+  Model,
+  Column,
+  Table,
+  BelongsTo,
+  Default,
+  ForeignKey,
+  AllowNull,
+  Index,
+} from "sequelize-typescript";
+import { DataTypes, Optional } from "sequelize";
+import CanonicalPodcast from "./00-canonical-podcast";
+import { ICanonicalEpisode } from "../interfaces";
 
-interface EpisodeCreationAttributes extends Optional<ICanonicalEpisode, 'id'> { }
+type EpisodeCreationAttributes = Optional<ICanonicalEpisode, "id">;
 
 @Table({
-	paranoid: true
+  paranoid: true,
 })
-class CanonicalEpisode extends Model<ICanonicalEpisode, EpisodeCreationAttributes> {
-	@Column
-	title!: string;
+class CanonicalEpisode extends Model<
+  ICanonicalEpisode,
+  EpisodeCreationAttributes
+> {
+  @Index
+  @Column
+  title!: string;
 
-	@Column
-	searchTitle!: string;
+  @Index
+  @Column
+  searchTitle!: string;
 
-	@BelongsTo(() => CanonicalPodcast)
-	canonicalPodcast: CanonicalPodcast;
+  @BelongsTo(() => CanonicalPodcast)
+  canonicalPodcast: CanonicalPodcast;
 
-	@ForeignKey(() => CanonicalPodcast)
-	canonicalPodcastId: number;
+  @ForeignKey(() => CanonicalPodcast)
+  canonicalPodcastId: number;
 
-	@Column({
-		type: DataTypes.TEXT
-	})
-	description!: string;
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  description!: string;
 
-	@Column
-	guid: string;
+  @Index
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  guid: string;
 
-	@Default(-1)
-	@Column
-	duration: number;
+  @AllowNull
+  @Default(-1)
+  @Column
+  duration?: number;
 
-	@AllowNull
-	@Column({
-		type: DataTypes.TEXT
-	})
-	artworkURL?: string;
+  @AllowNull
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  artworkURL?: string;
 
-	@Column
-	publishDate: Date;
+  @Column
+  publishDate: Date;
 
-	@Column
-	episodeType?: string;
+  @AllowNull
+  @Column
+  episodeType?: string;
 
-	@Column({
-		type: DataTypes.TEXT
-	})
-	enclosureURL?: string;
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  enclosureURL?: string;
 }
 export default CanonicalEpisode;
