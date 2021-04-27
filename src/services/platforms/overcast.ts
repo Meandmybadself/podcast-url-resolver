@@ -170,11 +170,12 @@ export default class Overcast
           });
         } else {
           console.log("Did not find an overcast episode");
-          const finalURL: string = response.request.res.responseUrl;
+          const finalURL: string =
+            response.request?.res.responseUrl || "unknown";
           console.log(`URL: ${finalURL}`);
         }
       } catch {
-        const finalURL: string = response.request.res.responseUrl;
+        const finalURL: string = response.request?.res.responseUrl || "unknown";
         logger.error(
           `Error while trying to fetch Overcast episode - ${canonicalPodcast.title}: ${canonicalEpisode.title} - ${finalURL}`
         );

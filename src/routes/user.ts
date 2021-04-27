@@ -19,6 +19,10 @@ export const requiresAuth = async (
   next: NextFunction
 ): Promise<void> => {
   const bearer: string = request.headers.authorization;
+  if (process.env.ENV === "local") {
+    next();
+    return;
+  }
   if (bearer?.trim()) {
     const secret: string = bearer.replace(/^Bearer /m, "");
 

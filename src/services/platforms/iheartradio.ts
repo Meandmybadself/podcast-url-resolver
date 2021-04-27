@@ -56,7 +56,7 @@ export default class IHeartRadio
     const platformPodcastSearchResults = await BasePlatformClient.getPageData(
       `https://us.api.iheart.com/api/v3/search/all?boostMarketId=116&bundle=true&keyword=true&keywords=${encodeURI(
         title
-      )}&maxRows=3&countryCode=US&startIndex=0&albums=false&artist=false&playlist=false&station=false&podcast=true&track=false`
+      )}&maxRows=50&countryCode=US&startIndex=0&albums=false&artist=false&playlist=false&station=false&podcast=true&track=false`
     );
     if (platformPodcastSearchResults?.results?.podcasts?.length) {
       const matchingPodcast = find(
