@@ -87,7 +87,7 @@ export default class Spotify
       (Spotify._tokenExpiry || Number.POSITIVE_INFINITY) > nowish;
 
     if (Spotify._token && tokenIsValid) {
-      return Spotify._token;
+      return;
     }
 
     console.log("Getting spotify token.");
