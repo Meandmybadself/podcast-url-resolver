@@ -47,7 +47,9 @@ const podcastIndexAPI = PodcastIndexAPI(
   process.env.PODCASTINDEX_SECRET
 );
 
-export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
+export const lookupEpisodeByShareURL = async (
+  platformEpisodeURL: string
+): Promise<Partial<ICanonicalEpisode | void>> => {
   let searchCriteria: ISearchCriteria | void;
   let episodes: any;
 
@@ -70,7 +72,11 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
     })
   )?.platform;
 
-  if (platform?.platformId) {
+  const activePlatforms: {
+    [key: string]: IPlatformClient;
+  } = await getActivePlatformClients();
+
+  if (platform?.platformId && activePlatforms[platform.platformId]) {
     console.log(`Performing service lookup for ${platform.platformId}`);
     // We have an active lookup service for this hostname.
     const service: IPlatformClient = PLATFORM_CLIENTS[platform.platformId];
@@ -239,9 +245,13 @@ export const lookupEpisodeByShareURL = async (platformEpisodeURL: string) => {
           if (canonicalEpisode && canonicalEpisode) {
             // We have a canonical version of the podcast and the episode in the database.
             // Add the platform podcasts / episodes.
+            const activePlatforms: {
+              [key: string]: IPlatformClient;
+            } = await getActivePlatformClients();
+
             await Promise.all(
               Object.values(
-                PLATFORM_CLIENTS
+                activePlatforms
               ).map(async (client: IPlatformClient) =>
                 client.ensurePodcastEpisode(canonicalPodcast, canonicalEpisode)
               )
@@ -325,6 +335,20 @@ const getEpisodeByShareURL = async (platformEpisodeURL: string) => {
   }
 };
 
+const getActivePlatformClients = async (): Promise<{
+  [key: string]: IPlatformClient;
+}> => {
+  const clientIds: string[] = await Platform.findAll({
+    where: { isActive: true },
+    attributes: ["platformId"],
+  }).then((platforms) => platforms.map((platform) => platform.platformId));
+  const clients: { [key: string]: IPlatformClient } = {};
+  clientIds.forEach((clientId: string) => {
+    clients[clientId] = PLATFORM_CLIENTS[clientId];
+  });
+  return clients;
+};
+
 export const lookupEpisodeByFeedURLAndGUID = async (
   feedURL: string,
   guid: string
@@ -343,8 +367,10 @@ export const lookupEpisodeByFeedURLAndGUID = async (
     );
 
     if (canonicalPodcast && canonicalEpisode) {
+      const activePlatforms = await getActivePlatformClients();
+
       await Promise.all(
-        Object.values(PLATFORM_CLIENTS).map(async (client: IPlatformClient) =>
+        Object.values(activePlatforms).map(async (client: IPlatformClient) =>
           client.ensurePodcastEpisode(canonicalPodcast, canonicalEpisode)
         )
       );
