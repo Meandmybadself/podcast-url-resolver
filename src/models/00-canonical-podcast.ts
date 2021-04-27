@@ -1,74 +1,89 @@
-import {Model, Column, Table, HasMany, Default, Index, AllowNull} from 'sequelize-typescript';
-import {Optional, DataTypes} from 'sequelize';
+import {
+  Model,
+  Column,
+  Table,
+  HasMany,
+  Default,
+  Index,
+  AllowNull,
+} from "sequelize-typescript";
+import { Optional, DataTypes } from "sequelize";
 
-import CanonicalEpisode from './00-canonical-episode';
-import {ICanonicalPodcast} from '../interfaces';
+import CanonicalEpisode from "./00-canonical-episode";
+import { ICanonicalPodcast } from "../interfaces";
 
-interface PodcastCreationAttributes extends Optional<ICanonicalPodcast, 'id'> { }
+type PodcastCreationAttributes = Optional<ICanonicalPodcast, "id">;
 
 @Table({
-	paranoid: true
+  paranoid: true,
 })
-class CanonicalPodcast extends Model<ICanonicalPodcast, PodcastCreationAttributes> {
-	@Column
-	title!: string;
+class CanonicalPodcast extends Model<
+  ICanonicalPodcast,
+  PodcastCreationAttributes
+> {
+  @Index
+  @Column
+  title!: string;
 
-	@Column
-	searchTitle!: string;
+  @Index
+  @Column
+  searchTitle!: string;
 
-	@Column({
-		type: DataTypes.TEXT
-	})
-	description: string;
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  description: string;
 
-	@Column
-	language: string;
+  @Column
+  language: string;
 
-	@Index
-	@Column({
-		type: DataTypes.TEXT
-	})
-	feedURL: string;
+  @Index
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  feedURL: string;
 
-	@AllowNull
-	@Column
-	explicit: boolean;
+  @AllowNull
+  @Column
+  explicit: boolean;
 
-	@AllowNull
-	@Column
-	copyright?: string;
+  @AllowNull
+  @Column
+  copyright?: string;
 
-	@Column({
-		type: DataTypes.TEXT
-	})
-	artworkURL: string;
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  artworkURL: string;
 
-	@Column
-	author: string;
+  @Column
+  author: string;
 
-	@Column
-	ownerName: string;
+  @AllowNull
+  @Column
+  ownerName?: string;
 
-	@Column
-	ownerEmail: string;
+  @AllowNull
+  @Column
+  ownerEmail?: string;
 
-	@AllowNull
-	@Column
-	link: string;
+  @AllowNull
+  @Column
+  link: string;
 
-	@Column
-	updated: Date;
+  @Column
+  updated: Date;
 
-	@AllowNull
-	@Column
-	type: string;
+  @AllowNull
+  @Column
+  type: string;
 
-	@HasMany(() => CanonicalEpisode)
-	episodes: CanonicalEpisode[];
+  @HasMany(() => CanonicalEpisode)
+  episodes: CanonicalEpisode[];
 
-	@Default(Date.now())
-	@Column
-	lastChecked: Date;
+  @Default(Date.now())
+  @Column
+  lastChecked: Date;
 }
 
 export default CanonicalPodcast;

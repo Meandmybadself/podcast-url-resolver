@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "nodemon --config nodemon.json src/index.ts",
     "dev:debug": "nodemon --config nodemon.json --inspect-brk src/index.ts",
+    "dev:tests": "nodemon --config nodemon.json src/tests/index.ts",
     "lint:all": "npm run lint:xo && npm run lint:tsc",
     "lint:tsc": "tsc --noEmit",
     "lint:xo": "xo --fix",
@@ -22,10 +23,12 @@
     "copy:files": "cp -R src/public dist/"
   },
   "dependencies": {
+    "@types/cheerio": "^0.22.28",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.5",
     "cors": "^2.8.5",
+    "csv-write-stream": "^2.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
@@ -73,14 +76,17 @@
       "src/public/static/**/*"
     ],
     "rules": {
-      "no-new": 0,
-      "new-cap": 0,
-      "@typescript-eslint/no-var-requires": 0,
       "@typescript-eslint/dot-notation": 0,
-      "max-depth": 0,
-      "promise/prefer-await-to-then": 0,
-      "no-case-declarations": 0,
       "@typescript-eslint/no-floating-promises": 0,
+      "@typescript-eslint/no-var-requires": 0,
+      "@typescript-eslint/no-unsafe-assignment": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "default-case": 0,
+      "max-depth": 0,
+      "new-cap": 0,
+      "no-case-declarations": 0,
+      "no-new": 0,
+      "promise/prefer-await-to-then": 0,
       "unicorn/no-array-for-each": 0
     }
   },
