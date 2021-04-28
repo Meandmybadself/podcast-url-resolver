@@ -28,7 +28,6 @@ import PlatformEpisode from "../models/platform-episode";
 import PlatformData from "./platform-data";
 import Stitcher from "./platforms/stitcher";
 import Pocketcasts from "./platforms/pocketcasts";
-import PodcastAddict from "./platforms/podcast-addict";
 import IHeartRadio from "./platforms/iheartradio";
 
 // Instantiate platform clients
@@ -38,7 +37,6 @@ const PLATFORM_CLIENTS: Record<string, IPlatformClient> = {
   spotify: new Spotify(),
   stitcher: new Stitcher(),
   pocketcasts: new Pocketcasts(),
-  podcastaddict: new PodcastAddict(),
   iheartradio: new IHeartRadio(),
 };
 
@@ -130,7 +128,6 @@ export const lookupEpisodeByShareURL = async (
         }
 
         if (podcastIndexResult?.feeds?.length) {
-          console.log("Podcastindex has results.");
           const podcastSearchTitle: string = makeSearchSafeString(
             searchCriteria.podcastTitle
           );
@@ -141,7 +138,6 @@ export const lookupEpisodeByShareURL = async (
           );
 
           if (podcastTitleMatch) {
-            console.log("Found a podcastindex podcast.");
             // We're presuming that the first match is the correct match.
             // If this turns out to not be the case, do some string comparison checking.
             // We only need the feed URL.
@@ -432,11 +428,8 @@ export const lookupPodcastByFeedURL = async (
           case "pocketcasts":
             feedURL = await Pocketcasts.fetchPodcastURLByTitle(title);
             break;
-          case "podcastaddict":
-            feedURL = await PodcastAddict.fetchPodcastURLByTitle(title);
-            break;
           case "iheartradio":
-            feedURL = await PodcastAddict.fetchPodcastURLByTitle(title);
+            feedURL = await IHeartRadio.fetchPodcastURLByTitle(title);
             break;
           default:
             console.log("Unrecognized platformId", platformId);
@@ -449,13 +442,21 @@ export const lookupPodcastByFeedURL = async (
       })
     );
 
-    // Google.
-    if (canonicalPodcast.feedURL) {
+    if (Object.keys(thirdPartyFeedURLs).length && canonicalPodcast.feedURL) {
+      // Google.
       thirdPartyFeedURLs[
         "google"
       ] = `https://podcasts.google.com/?feed=${Buffer.from(
         canonicalPodcast.feedURL
       ).toString("base64")}`;
+
+      // Podcast Addict.
+      thirdPartyFeedURLs[
+        "podcastaddict"
+      ] = `https://podcastaddict.com/feed/${canonicalPodcast.feedURL.replace(
+        /^https?:\/\//m,
+        ""
+      )}`;
     }
 
     return thirdPartyFeedURLs;
@@ -476,7 +477,6 @@ const getThirdPartyPlatformEpisodeURLs = async (
     })
   ).map((platformEpisode) => platformEpisode.get({ plain: true }));
 
-  console.log(`Found ${platformEpisodes.length} third-party episodes`);
   const thirdPartyURLs = {};
 
   await Promise.all(
@@ -560,6 +560,9 @@ const getThirdPartyPlatformEpisodeURLs = async (
     })
   );
 
+  console.log(
+    `Found ${Object.keys(thirdPartyURLs).length} third-party episodes`
+  );
   if (
     Object.keys(thirdPartyURLs).length &&
     canonicalEpisode.guid &&
@@ -570,6 +573,14 @@ const getThirdPartyPlatformEpisodeURLs = async (
     ).toString("base64")}&episode=${Buffer.from(canonicalEpisode.guid).toString(
       "base64"
     )}`;
+
+    // Podcast Addict.
+    thirdPartyURLs[
+      "podcastaddict"
+    ] = `https://podcastaddict.com/feed/${canonicalPodcast.feedURL.replace(
+      /^https?:\/\//m,
+      ""
+    )}/${canonicalEpisode.guid}`;
   }
 
   return thirdPartyURLs;

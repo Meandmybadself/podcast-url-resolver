@@ -65,7 +65,9 @@ export const loadAndUpsertFeed = async (
         categories,
       } = feed;
 
-      const feedEpisodes: IFeedEpisode[] = feed.episodes;
+      const feedEpisodes: IFeedEpisode[] = feed.episodes.filter(
+        (episode) => !episode.title
+      );
 
       // Don't let falsey values affect query.
       const where = pickBy(

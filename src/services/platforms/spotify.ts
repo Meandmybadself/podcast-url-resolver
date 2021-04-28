@@ -237,14 +237,12 @@ export default class Spotify
     }
 
     if (platformPodcast) {
-      console.log("Found Spotify podcast", platformPodcast.platformPodcastId);
       const platformEpisode = await Spotify.getEpisode(
         platformPodcast.platformPodcastId,
         canonicalEpisode.title
       );
 
       if (platformEpisode) {
-        console.log("Found Spotify episode", platformEpisode.id);
         await PlatformEpisode.create({
           canonicalPodcastId: canonicalPodcast.id,
           platformId,

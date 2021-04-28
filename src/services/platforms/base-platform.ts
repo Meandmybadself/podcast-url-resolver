@@ -10,13 +10,22 @@ import {
 import PlatformEpisode from "../../models/platform-episode";
 import logger from "../../utilities/log";
 import PlatformData from "../platform-data";
+import https from "https";
 
 export default class BasePlatformClient implements IPlatformClient {
   _id: string;
 
   static async getPageData(url: string): Promise<any> {
     try {
-      return (await axios.get(url)).data;
+      return (
+        await axios({
+          method: "GET",
+          url,
+          httpsAgent: new https.Agent({
+            rejectUnauthorized: false,
+          }),
+        })
+      ).data;
     } catch {
       logger.error(`🚨 Error while attempting to load: ${url}`);
     }

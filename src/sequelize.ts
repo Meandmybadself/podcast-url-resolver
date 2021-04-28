@@ -22,11 +22,6 @@ const initializeBaseTables = async () => {
     await Platform.create({ name: "Spotify", platformId: "spotify" });
     await Platform.create({ name: "Stitcher", platformId: "stitcher" });
     await Platform.create({ name: "Pocket Casts", platformId: "pocketcasts" });
-    await Platform.create({
-      name: "Podcast Addict",
-      platformId: "podcastaddict",
-      isActive: false,
-    });
     await Platform.create({ name: "iHeartRadio", platformId: "iheartradio" });
 
     await PlatformHost.create({ hostname: "overcast.fm", platformId: 1 });
@@ -39,7 +34,6 @@ const initializeBaseTables = async () => {
     await PlatformHost.create({ hostname: "stitcher.com", platformId: 4 });
     await PlatformHost.create({ hostname: "pocketcasts.com", platformId: 5 });
     await PlatformHost.create({ hostname: "pca.st", platformId: 5 });
-    await PlatformHost.create({ hostname: "podcastaddict.com", platformId: 5 });
     await PlatformHost.create({ hostname: "iheart.com", platformId: 6 });
 
     await User.create({ email: "meandmybadself@gmail.com", role: "admin" });
