@@ -10,8 +10,7 @@ import jwt from "jsonwebtoken";
 import User from "./models/user";
 
 Sentry.init({
-  dsn:
-    "https://e256dc0c0a1f40ac987a9b0ad07a0539@o26103.ingest.sentry.io/5739794",
+  dsn: process.env.SENTRY_URI,
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
