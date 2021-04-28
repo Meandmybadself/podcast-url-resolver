@@ -15,7 +15,7 @@
     "lint:tsc": "tsc --noEmit",
     "lint:xo": "xo --fix",
     "start": "node dist/index.js",
-    "postinstall": "tsc && npm run copy:files",
+    "postinstall": "tsc -p tsconfig.production.json   && npm run copy:files",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
     "kill:debugger": "kill -9 $(lsof -t -i tcp:9229)",
@@ -23,6 +23,8 @@
     "copy:files": "cp -R src/public dist/"
   },
   "dependencies": {
+    "@sentry/node": "^6.3.3",
+    "@sentry/tracing": "^6.3.3",
     "@types/cheerio": "^0.22.28",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
