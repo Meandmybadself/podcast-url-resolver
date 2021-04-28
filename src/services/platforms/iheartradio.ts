@@ -125,10 +125,7 @@ export default class IHeartRadio
 
     if (platformPodcastSearchResult) {
       const platformPodcastId: string = platformPodcastSearchResult.id.toString();
-      console.log(
-        "Found an iHeartRadio podcast",
-        platformPodcastSearchResult.id
-      );
+
       await PlatformPodcast.findOrCreate({
         where: {
           platformId,
@@ -147,7 +144,6 @@ export default class IHeartRadio
             canonicalEpisode.searchTitle === makeSearchSafeString(episode.title)
         );
         if (matchingEpisode) {
-          console.log("Found an iHeartRadio episode", matchingEpisode.id);
           const platformEpisodeId: string = matchingEpisode.id.toString();
           await PlatformEpisode.findOrCreate({
             where: {

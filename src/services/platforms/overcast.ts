@@ -95,6 +95,9 @@ export default class Overcast
       headers: {
         Cookie,
       },
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
     });
 
     console.log("🔒 Signed into Overcast");
@@ -131,7 +134,6 @@ export default class Overcast
       canonicalPodcast.title
     );
     if (podcastURL) {
-      console.log("Found Overcast episode URL", podcastURL);
       let response: AxiosResponse;
       try {
         response = await this._axiosInstance.get(podcastURL);
@@ -151,7 +153,6 @@ export default class Overcast
           );
 
         if (episode) {
-          console.log("Found Overcast episode", episode.overcastId);
           await PlatformEpisode.findOrCreate({
             where: {
               platformId,
@@ -171,11 +172,12 @@ export default class Overcast
         } else {
           console.log("Did not find an overcast episode");
           const finalURL: string =
-            response.request?.res.responseUrl || "unknown";
+            response?.request?.res.responseUrl || "unknown";
           console.log(`URL: ${finalURL}`);
         }
       } catch {
-        const finalURL: string = response.request?.res.responseUrl || "unknown";
+        const finalURL: string =
+          response?.request?.res.responseUrl || "unknown";
         logger.error(
           `Error while trying to fetch Overcast episode - ${canonicalPodcast.title}: ${canonicalEpisode.title} - ${finalURL}`
         );

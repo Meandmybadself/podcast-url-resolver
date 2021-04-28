@@ -66,7 +66,6 @@ export default class Pocketcasts
       );
 
       if (searchRequest.data.result?.search_results?.length) {
-        console.log("Pocket Casts - Found results");
         return searchRequest.data.result.search_results[0].uuid;
       }
 
@@ -139,7 +138,6 @@ export default class Pocketcasts
         `https://cache.pocketcasts.com/mobile/podcast/full/${pocketcastsPodcastId}/0/3/1500`
       );
       if (episodeRequest?.podcast?.episodes?.length) {
-        console.log("Pocket Casts - upserting episode");
         const episodeSearchTitle: string = makeSearchSafeString(
           canonicalEpisode.title
         );
@@ -152,9 +150,6 @@ export default class Pocketcasts
         );
 
         if (matchingEpisode) {
-          console.log(
-            `Pocket Casts - creating episode: ${matchingEpisode.uuid}`
-          );
           await PlatformEpisode.create({
             canonicalEpisodeId: canonicalEpisode.id,
             platformId,
