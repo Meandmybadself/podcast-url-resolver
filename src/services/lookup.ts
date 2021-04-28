@@ -397,8 +397,10 @@ export const lookupPodcastByFeedURL = async (
 
   // Do we have a podcast w/ that feed URL?
   let canonicalPodcast: ICanonicalPodcast | void = await CanonicalPodcast.findOne(
-    { where: { feedURL } }
-  ).then((entity) => entity.get({ plain: true }));
+    {
+      where: { feedURL },
+    }
+  ).then((entity) => entity?.get({ plain: true }));
 
   if (!canonicalPodcast) {
     canonicalPodcast = await loadAndUpsertFeed(feedURL);

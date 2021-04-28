@@ -20,6 +20,11 @@ const routes = (router: Router): void => {
         id: "google",
       });
 
+      result.push({
+        name: "Podcast Addict",
+        id: "podcastaddict",
+      });
+
       response.success({ result });
     }
   );
