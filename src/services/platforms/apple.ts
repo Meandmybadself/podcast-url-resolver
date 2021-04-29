@@ -7,9 +7,6 @@ import {
 import BasePlatformClient from "./base-platform";
 import { some, find } from "lodash";
 import { makeSearchSafeString } from "../../utilities/string";
-import PlatformPodcast from "../../models/platform-podcast";
-import PlatformEpisode from "../../models/platform-episode";
-import PlatformEpisodeURL from "../../models/platform-episode-url";
 import logger from "../../utilities/log";
 
 interface IAppleLookupResponse {
@@ -132,22 +129,13 @@ export default class Apple
     canonicalPodcast: ICanonicalPodcast,
     canonicalEpisode: ICanonicalEpisode
   ): Promise<void> {
-    const platformId = await this.getPlatformId();
-
     // There isn't any cost-savings in persisting just the podcast id here, because when you query apple, you get all episodes
     const platformPodcastId: string | void = await Apple.fetchPodcastByTitle(
       canonicalPodcast.title
     );
 
     if (platformPodcastId) {
-      // Try to create it.  It may already exist.
-      await PlatformPodcast.findOrCreate({
-        where: {
-          platformId,
-          canonicalPodcastId: canonicalPodcast.id,
-          platformPodcastId: platformPodcastId.toString(),
-        },
-      });
+      await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
 
       // Apple episode search
       const url = `http://itunes.apple.com/lookup?id=${platformPodcastId}&entity=podcastEpisode&limit=200`;
@@ -167,32 +155,15 @@ export default class Apple
       });
       if (episode) {
         const platformEpisodeId: string = episode.trackId.toString();
-        try {
-          await PlatformEpisode.create({
-            platformId,
-            canonicalEpisodeId: canonicalEpisode.id,
-            canonicalPodcastId: canonicalPodcast.id,
-            platformEpisodeId,
-          });
-        } catch (error: unknown) {
-          console.log(
-            "Error while attempting to create an apple platform episode",
-            error
-          );
-        }
-
-        try {
-          await PlatformEpisodeURL.create({
-            episodeId: canonicalEpisode.id,
-            platformId,
-            platformEpisodeURL: `https://podcasts.apple.com/us/podcast/id${platformPodcastId}?i=${platformEpisodeId}`,
-          });
-        } catch (error: unknown) {
-          console.log(
-            "Error while attempting to create an apple platform episode url",
-            error
-          );
-        }
+        await this.upsertPlatformEpisode(
+          canonicalPodcast,
+          canonicalEpisode,
+          platformEpisodeId
+        );
+        await this.upsertPlatformEpisodeURL(
+          canonicalEpisode,
+          `https://podcasts.apple.com/us/podcast/id${platformPodcastId}?i=${platformEpisodeId}`
+        );
       } else {
         this.couldNotFetchEpisode(canonicalEpisode);
       }

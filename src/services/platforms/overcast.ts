@@ -8,8 +8,6 @@ import {
 import BasePlatformClient from "./base-platform";
 import cheerio from "cheerio";
 import Apple from "./apple";
-import PlatformEpisode from "../../models/platform-episode";
-import PlatformEpisodeURL from "../../models/platform-episode-url";
 import { normalizeText, makeSearchSafeString } from "../../utilities/string";
 import https from "https";
 import logger from "../../utilities/log";
@@ -127,8 +125,6 @@ export default class Overcast
     canonicalPodcast: ICanonicalPodcast,
     canonicalEpisode: ICanonicalEpisode
   ): Promise<void> {
-    const platformId = await this.getPlatformId();
-
     // There isn't any cost-savings in persisting just the podcast id in the db here, because when you query overcast, you get all episodes
     const podcastURL: string | void = await Overcast.fetchPodcastURLByTitle(
       canonicalPodcast.title
@@ -153,22 +149,15 @@ export default class Overcast
           );
 
         if (episode) {
-          await PlatformEpisode.findOrCreate({
-            where: {
-              platformId,
-              canonicalEpisodeId: canonicalEpisode.id,
-              canonicalPodcastId: canonicalPodcast.id,
-              platformEpisodeId: episode.overcastId,
-            },
-          });
-
-          await PlatformEpisodeURL.findOrCreate({
-            where: {
-              episodeId: canonicalEpisode.id,
-              platformId,
-              platformEpisodeURL: episode.overcastURL,
-            },
-          });
+          await this.upsertPlatformEpisode(
+            canonicalPodcast,
+            canonicalEpisode,
+            episode.overcastId
+          );
+          await this.upsertPlatformEpisodeURL(
+            canonicalEpisode,
+            episode.overcastURL
+          );
         } else {
           console.log("Did not find an overcast episode");
           const finalURL: string =

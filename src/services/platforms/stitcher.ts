@@ -5,8 +5,6 @@ import {
   IPlatformClient,
   ISearchCriteria,
 } from "../../interfaces";
-import PlatformEpisode from "../../models/platform-episode";
-import PlatformPodcast from "../../models/platform-podcast";
 import { makeSearchSafeString } from "../../utilities/string";
 import BasePlatformClient from "./base-platform";
 
@@ -134,21 +132,13 @@ export default class Stitcher
     canonicalPodcast: ICanonicalPodcast,
     canonicalEpisode: ICanonicalEpisode
   ): Promise<void> {
-    const platformId = await this.getPlatformId();
-
     // We need the numerical ID and the slug for looking up a podcast.
     const stitcherPodcast: IStitcherPodcast | void = await Stitcher._searchForPodcast(
       canonicalPodcast.title
     );
     let platformPodcast: any;
     if (stitcherPodcast) {
-      platformPodcast = await PlatformPodcast.findOrCreate({
-        where: {
-          platformId,
-          canonicalPodcastId: canonicalPodcast.id,
-          platformPodcastId: stitcherPodcast.slug,
-        },
-      }).then(([entity]) => entity.get({ plain: true }));
+      await this.upsertPlatformPodcast(canonicalPodcast, stitcherPodcast.slug);
 
       if (platformPodcast) {
         const { data } = await BasePlatformClient.getPageData(
@@ -167,14 +157,11 @@ export default class Stitcher
               episode.show_id === stitcherPodcast.id
           );
           if (episodeMatch) {
-            await PlatformEpisode.findOrCreate({
-              where: {
-                canonicalEpisodeId: canonicalEpisode.id,
-                platformId,
-                canonicalPodcastId: canonicalPodcast.id,
-                platformEpisodeId: episodeMatch.slug,
-              },
-            });
+            await this.upsertPlatformEpisode(
+              canonicalPodcast,
+              canonicalEpisode,
+              episodeMatch.slug
+            );
           } else {
             this.couldNotFetchEpisode(canonicalEpisode);
           }

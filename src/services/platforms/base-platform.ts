@@ -11,6 +11,8 @@ import PlatformEpisode from "../../models/platform-episode";
 import logger from "../../utilities/log";
 import PlatformData from "../platform-data";
 import https from "https";
+import PlatformPodcast from "../../models/platform-podcast";
+import PlatformEpisodeURL from "../../models/platform-episode-url";
 
 export default class BasePlatformClient implements IPlatformClient {
   _id: string;
@@ -82,6 +84,73 @@ export default class BasePlatformClient implements IPlatformClient {
     );
   }
 
+  async upsertPlatformPodcast(
+    canonicalPodcast: ICanonicalPodcast,
+    platformPodcastId: string
+  ): Promise<void> {
+    const platform = await this.getPlatform();
+    const platformId: number = platform.id;
+    try {
+      await PlatformPodcast.findOrCreate({
+        where: {
+          platformId,
+          canonicalPodcastId: canonicalPodcast.id,
+          platformPodcastId: platformPodcastId.toString(),
+        },
+      });
+      // .then(([entity]) => entity.get({ plain: true }));
+    } catch (e) {
+      console.log(e);
+      console.log("platform", platform.name);
+      console.log("canonicalPodcast.id", canonicalPodcast.id);
+      console.log("platformPodcastId", platformPodcastId);
+    }
+  }
+
+  async upsertPlatformEpisode(
+    canonicalPodcast: ICanonicalPodcast,
+    canonicalEpisode: ICanonicalEpisode,
+    platformEpisodeId: string
+  ): Promise<void> {
+    const platform = await this.getPlatform();
+    const platformId: number = platform.id;
+    try {
+      await PlatformEpisode.create({
+        platformId,
+        canonicalEpisodeId: canonicalEpisode.id,
+        canonicalPodcastId: canonicalPodcast.id,
+        platformEpisodeId,
+      });
+    } catch (e) {
+      console.log(e);
+      console.log("platform", platform.name);
+      console.log("canonicalPodcast.id", canonicalPodcast.id);
+      console.log("platformEpisodeId", platformEpisodeId);
+    }
+  }
+
+  async upsertPlatformEpisodeURL(
+    canonicalEpisode: ICanonicalEpisode,
+    platformEpisodeURL: string
+  ): Promise<void> {
+    const platform = await this.getPlatform();
+    const platformId: number = platform.id;
+    try {
+      await PlatformEpisodeURL.findOrCreate({
+        where: {
+          episodeId: canonicalEpisode.id,
+          platformId,
+          platformEpisodeURL,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+      console.log("platform", platform.name);
+      console.log("canonicalEpisode.id", canonicalEpisode.id);
+      console.log("platformEpisodeURL", platformEpisodeURL);
+    }
+  }
+
   /* eslint-enable @typescript-eslint/require-await */
 
   async ensurePodcastEpisode(
@@ -109,16 +178,16 @@ export default class BasePlatformClient implements IPlatformClient {
     logger.error(`Could not find search criteria - ${this._id}: ${searchURL}`);
   }
 
-  couldNotFetchPodcast(canonicalPodcast: ICanonicalPodcast): void {
-    logger.error(
-      `Could not fetch episode - ${this._id} - "${canonicalPodcast.title}"`
-    );
+  couldNotFetchPodcast(_canonicalPodcast: ICanonicalPodcast): void {
+    // logger.error(
+    //   `Could not fetch episode - ${this._id} - "${canonicalPodcast.title}"`
+    // );
   }
 
-  couldNotFetchEpisode(canonicalEpisode: ICanonicalEpisode): void {
-    logger.error(
-      `Could not fetch episode - ${this._id} - "${canonicalEpisode.title}"`
-    );
+  couldNotFetchEpisode(_canonicalEpisode: ICanonicalEpisode): void {
+    // logger.error(
+    //   `Could not fetch episode - ${this._id} - "${canonicalEpisode.title}"`
+    // );
   }
 
   couldNotFetchPodcastByTitle(title: string): void {

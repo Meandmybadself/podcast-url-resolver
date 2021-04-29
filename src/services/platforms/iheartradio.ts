@@ -5,8 +5,6 @@ import {
   IPlatformClient,
   ISearchCriteria,
 } from "../../interfaces";
-import PlatformEpisode from "../../models/platform-episode";
-import PlatformPodcast from "../../models/platform-podcast";
 import logger from "../../utilities/log";
 import { makeSearchSafeString } from "../../utilities/string";
 import BasePlatformClient from "./base-platform";
@@ -117,8 +115,6 @@ export default class IHeartRadio
     canonicalPodcast: ICanonicalPodcast,
     canonicalEpisode: ICanonicalEpisode
   ): Promise<void> {
-    const platformId = await this.getPlatformId();
-
     const platformPodcastSearchResult: IHeartRadioPodcastResult | void = await IHeartRadio.fetchPodcastByTitle(
       canonicalPodcast.title
     );
@@ -126,13 +122,7 @@ export default class IHeartRadio
     if (platformPodcastSearchResult) {
       const platformPodcastId: string = platformPodcastSearchResult.id.toString();
 
-      await PlatformPodcast.findOrCreate({
-        where: {
-          platformId,
-          platformPodcastId,
-          canonicalPodcastId: canonicalPodcast.id,
-        },
-      }).then(([entity]) => entity.get({ plain: true }));
+      await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
 
       const platformEpisodeSearchResults = await BasePlatformClient.getPageData(
         `https://us.api.iheart.com/api/v3/podcast/podcasts/${platformPodcastId}/episodes?newEnabled=false&limit=500&sortBy=startDate-desc`
@@ -144,15 +134,11 @@ export default class IHeartRadio
             canonicalEpisode.searchTitle === makeSearchSafeString(episode.title)
         );
         if (matchingEpisode) {
-          const platformEpisodeId: string = matchingEpisode.id.toString();
-          await PlatformEpisode.findOrCreate({
-            where: {
-              platformId,
-              platformEpisodeId,
-              canonicalPodcastId: canonicalPodcast.id,
-              canonicalEpisodeId: canonicalEpisode.id,
-            },
-          });
+          await this.upsertPlatformEpisode(
+            canonicalPodcast,
+            canonicalEpisode,
+            matchingEpisode.id.toString()
+          );
         } else {
           logger.error(
             `Could not fetch platform episode for iheartradio - ${canonicalPodcast.title}: ${canonicalEpisode.title}`

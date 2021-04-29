@@ -7,7 +7,6 @@ import {
   ISearchCriteria,
 } from "../../interfaces";
 import PlatformEpisode from "../../models/platform-episode";
-import PlatformEpisodeURL from "../../models/platform-episode-url";
 import PlatformPodcast from "../../models/platform-podcast";
 import { makeSearchSafeString, normalizeText } from "../../utilities/string";
 import { now } from "../../utilities/time";
@@ -216,24 +215,25 @@ export default class Spotify
     }
 
     // Do we have the platform podcast persisted?
-    let platformPodcast: any = await PlatformPodcast.findOne({
+    let platformPodcastId: string;
+    const platformPodcast: any = await PlatformPodcast.findOne({
       where: {
         platformId,
         canonicalPodcastId: canonicalPodcast.id,
       },
     });
-
-    if (!platformPodcast) {
-      const platformPodcastId = await Spotify.fetchPodcastIDByTitle(
+    if (platformPodcast) {
+      platformPodcastId = platformPodcast.id;
+    } else {
+      const podcastId: string | void = await Spotify.fetchPodcastIDByTitle(
         canonicalPodcast.title
       );
-      if (platformPodcastId) {
-        platformPodcast = await PlatformPodcast.create({
-          platformId,
-          platformPodcastId,
-          canonicalPodcastId: canonicalPodcast.id,
-        }).then((entity) => entity.get({ plain: true }));
+      if (podcastId) {
+        platformPodcastId = podcastId;
       }
+    }
+    if (platformPodcastId) {
+      await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
     }
 
     if (platformPodcast) {
@@ -243,18 +243,15 @@ export default class Spotify
       );
 
       if (platformEpisode) {
-        await PlatformEpisode.create({
-          canonicalPodcastId: canonicalPodcast.id,
-          platformId,
-          canonicalEpisodeId: canonicalEpisode.id,
-          platformEpisodeId: platformEpisode.id,
-        });
-
-        await PlatformEpisodeURL.create({
-          platformId,
-          episodeId: canonicalEpisode.id,
-          platformEpisodeURL: `https://open.spotify.com/episode/${platformEpisode.id}`,
-        });
+        await this.upsertPlatformEpisode(
+          canonicalPodcast,
+          canonicalEpisode,
+          platformEpisode.id
+        );
+        await this.upsertPlatformEpisodeURL(
+          canonicalEpisode,
+          `https://open.spotify.com/episode/${platformEpisode.id}`
+        );
       }
     }
   }

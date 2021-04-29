@@ -8,7 +8,6 @@ import {
 import { makeSearchSafeString, normalizeText } from "../../utilities/string";
 import BasePlatformClient from "./base-platform";
 import { find } from "lodash";
-import PlatformPodcast from "../../models/platform-podcast";
 import PlatformEpisode from "../../models/platform-episode";
 import logger from "../../utilities/log";
 
@@ -121,21 +120,15 @@ export default class Pocketcasts
       return;
     }
 
-    const pocketcastsPodcastId:
+    const platformPodcastId:
       | string
       | void = await Pocketcasts.fetchPodcastIdByTitle(canonicalPodcast.title);
 
-    if (pocketcastsPodcastId) {
-      await PlatformPodcast.findOrCreate({
-        where: {
-          platformId,
-          canonicalPodcastId: canonicalPodcast.id,
-          platformPodcastId: pocketcastsPodcastId,
-        },
-      }).then(([entity]) => entity.get({ plain: true }));
+    if (platformPodcastId) {
+      await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
 
       const episodeRequest = await BasePlatformClient.getPageData(
-        `https://cache.pocketcasts.com/mobile/podcast/full/${pocketcastsPodcastId}/0/3/1500`
+        `https://cache.pocketcasts.com/mobile/podcast/full/${platformPodcastId}/0/3/1500`
       );
       if (episodeRequest?.podcast?.episodes?.length) {
         const episodeSearchTitle: string = makeSearchSafeString(
@@ -150,12 +143,11 @@ export default class Pocketcasts
         );
 
         if (matchingEpisode) {
-          await PlatformEpisode.create({
-            canonicalEpisodeId: canonicalEpisode.id,
-            platformId,
-            platformEpisodeId: matchingEpisode.uuid,
-            canonicalPodcastId: canonicalPodcast.id,
-          });
+          await this.upsertPlatformEpisode(
+            canonicalPodcast,
+            canonicalEpisode,
+            matchingEpisode.uuid
+          );
         } else {
           logger.error(
             `Could not find a platform episode – pocketcasts - ${canonicalPodcast.title}: ${canonicalEpisode.title}`
