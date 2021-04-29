@@ -149,14 +149,10 @@ export default class Pocketcasts
             matchingEpisode.uuid
           );
         } else {
-          logger.error(
-            `Could not find a platform episode – pocketcasts - ${canonicalPodcast.title}: ${canonicalEpisode.title}`
-          );
+          this.couldNotFetchPodcast(canonicalPodcast);
         }
       } else {
-        logger.error(
-          `Could not fetch platform episodes - pocketcasts - ${canonicalPodcast.title}: ${canonicalEpisode.title}`
-        );
+        this.couldNotFetchEpisode(canonicalEpisode);
       }
     }
   }

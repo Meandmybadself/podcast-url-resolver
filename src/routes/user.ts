@@ -80,13 +80,13 @@ export const requiresAuth = async (
       }
     } catch (error: unknown) {
       if (error instanceof jwt.JsonWebTokenError) {
-        response.status(401).end();
+        response.unauthorized();
+
         return;
       }
     }
   }
-
-  response.status(401).end();
+  response.unauthorized();
 };
 
 export const requiresAdmin = async (
@@ -110,18 +110,16 @@ export const requiresAdmin = async (
         next();
         return;
       }
-
-      response.status(403).end();
+      response.forbidden();
       return;
     } catch (error: unknown) {
       if (error instanceof jwt.JsonWebTokenError) {
-        response.status(401).end();
+        response.unauthorized();
         return;
       }
     }
   }
-
-  response.status(401).end();
+  response.unauthorized();
 };
 
 const routes = (router: Router): void => {

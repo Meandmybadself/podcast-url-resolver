@@ -140,9 +140,7 @@ export default class IHeartRadio
             matchingEpisode.id.toString()
           );
         } else {
-          logger.error(
-            `Could not fetch platform episode for iheartradio - ${canonicalPodcast.title}: ${canonicalEpisode.title}`
-          );
+          this.couldNotFetchEpisode(canonicalEpisode);
         }
       }
     }

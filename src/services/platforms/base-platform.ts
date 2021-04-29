@@ -158,7 +158,6 @@ export default class BasePlatformClient implements IPlatformClient {
     canonicalEpisode: ICanonicalEpisode
   ): Promise<any> {
     const platformId: number = await this.getPlatformId();
-    // console.log('ensurePodcastEpisode', this._id);
     // See if we already have the platform episode.
     const ep = await PlatformEpisode.findOne({
       where: {
@@ -178,19 +177,27 @@ export default class BasePlatformClient implements IPlatformClient {
     logger.error(`Could not find search criteria - ${this._id}: ${searchURL}`);
   }
 
-  couldNotFetchPodcast(_canonicalPodcast: ICanonicalPodcast): void {
-    // logger.error(
-    //   `Could not fetch episode - ${this._id} - "${canonicalPodcast.title}"`
-    // );
+  couldNotFetchPodcast(canonicalPodcast: ICanonicalPodcast): void {
+    if (process.env.LOG_FAILED_PODCAST_FETCH === "1") {
+      logger.error(
+        `Could not fetch episode - ${this._id} - "${canonicalPodcast.title}"`
+      );
+    }
   }
 
-  couldNotFetchEpisode(_canonicalEpisode: ICanonicalEpisode): void {
-    // logger.error(
-    //   `Could not fetch episode - ${this._id} - "${canonicalEpisode.title}"`
-    // );
+  couldNotFetchEpisode(canonicalEpisode: ICanonicalEpisode): void {
+    if (process.env.LOG_FAILED_EPISODE_FETCH === "1") {
+      logger.error(
+        `Could not fetch episode - ${this._id} - "${canonicalEpisode.title}"`
+      );
+    }
   }
 
   couldNotFetchPodcastByTitle(title: string): void {
-    logger.error(`Could not fetch podcast by title - ${this._id} - "${title}"`);
+    if (process.env.LOG_FAILED_PODCAST_BY_TITLE_FETCH === "1") {
+      logger.error(
+        `Could not fetch podcast by title - ${this._id} - "${title}"`
+      );
+    }
   }
 }
