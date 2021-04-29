@@ -111,7 +111,7 @@ export default class Spotify
         url: "https://accounts.spotify.com/api/token",
         data: qs.stringify(data),
         headers,
-        timeout: 3000,
+        timeout: 10000,
       });
 
       const result: SpotifyResult = response?.data;
