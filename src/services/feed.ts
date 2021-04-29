@@ -66,7 +66,7 @@ export const loadAndUpsertFeed = async (
       } = feed;
 
       const feedEpisodes: IFeedEpisode[] = feed.episodes.filter(
-        (episode) => !episode.title
+        (episode) => !!episode.title
       );
 
       // Don't let falsey values affect query.

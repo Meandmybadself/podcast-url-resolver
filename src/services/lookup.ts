@@ -119,7 +119,7 @@ export const lookupEpisodeByShareURL = async (
           searchCriteria.podcastTitle
         );
 
-        // Get rid of podcats we can't use.
+        // Get rid of podcasts we can't use.
         if (podcastIndexResult?.feeds?.length) {
           podcastIndexResult.feeds = podcastIndexResult.feeds.filter(
             (feedItem: IPodcastIndexPodcast) =>
@@ -180,93 +180,92 @@ export const lookupEpisodeByShareURL = async (
         } else {
           console.warn("Podcastindex returned zero canonical results.");
         }
+      }
+      if (canonicalPodcast) {
+        // We have a canonical record of this podcast in the database.
+        // Do we have a canonical record of the episode?
+        const episodeSearchTitle: string = makeSearchSafeString(
+          searchCriteria.episodeTitle
+        );
+        canonicalEpisode = await CanonicalEpisode.findOne({
+          where: {
+            searchTitle: episodeSearchTitle,
+            canonicalPodcastId: canonicalPodcast.id,
+          },
+          plain: true,
+        });
 
-        if (canonicalPodcast) {
-          // We have a canonical record of this podcast in the database.
-          // Do we have a canonical record of the episode?
-          const episodeSearchTitle: string = makeSearchSafeString(
-            searchCriteria.episodeTitle
+        if (!canonicalEpisode) {
+          console.log("No canonical episode in DB. Looking up.");
+          // No canonical episode.
+          // We _should_ have one if we look in the feed episode list.
+          // Did we load the feed episode list?
+
+          if (!episodes) {
+            // We did not. Load feed.
+            const feed = await loadFeed(canonicalPodcast.feedURL);
+            if (feed && feed.episodes) {
+              // eslint-disable-line @typescript-eslint/prefer-optional-chain
+              episodes = feed.episodes;
+            }
+          }
+
+          const feedCanonicalEpisode: IFeedEpisode | undefined = find(
+            episodes,
+            {
+              title: searchCriteria.episodeTitle,
+            }
           );
-          canonicalEpisode = await CanonicalEpisode.findOne({
+
+          if (feedCanonicalEpisode) {
+            console.log("Adding canonical episode.");
+            try {
+              canonicalEpisode = await CanonicalEpisode.create({
+                title: feedCanonicalEpisode.title,
+                searchTitle: makeSearchSafeString(feedCanonicalEpisode.title),
+                canonicalPodcastId: canonicalPodcast.id,
+                description: feedCanonicalEpisode.description,
+                publishDate: new Date(feedCanonicalEpisode.published),
+                episodeType: feedCanonicalEpisode.episodeType,
+                duration: feedCanonicalEpisode.duration,
+                guid: feedCanonicalEpisode.guid,
+                enclosureURL: feedCanonicalEpisode.enclosure.url,
+                artworkURL: feedCanonicalEpisode.image,
+              }).then((entity) => entity.get({ plain: true }));
+            } catch (error: unknown) {
+              console.log("Error while inserting podcast.", error);
+            }
+          }
+        }
+
+        if (canonicalEpisode && canonicalEpisode) {
+          // We have a canonical version of the podcast and the episode in the database.
+          // Add the platform podcasts / episodes.
+          const activePlatforms: {
+            [key: string]: IPlatformClient;
+          } = await getActivePlatformClients();
+
+          await Promise.all(
+            Object.values(
+              activePlatforms
+            ).map(async (client: IPlatformClient) =>
+              client.ensurePodcastEpisode(canonicalPodcast, canonicalEpisode)
+            )
+          );
+
+          // Add the platform episode URL for future lookups.
+          await PlatformEpisodeURL.findOrCreate({
             where: {
-              searchTitle: episodeSearchTitle,
-              canonicalPodcastId: canonicalPodcast.id,
+              platformEpisodeURL,
+              episodeId: canonicalEpisode.id,
+              platformId: platform.id,
             },
-            plain: true,
           });
+        }
 
-          if (!canonicalEpisode) {
-            console.log("No canonical episode in DB. Looking up.");
-            // No canonical episode.
-            // We _should_ have one if we look in the feed episode list.
-            // Did we load the feed episode list?
-
-            if (!episodes) {
-              // We did not. Load feed.
-              const feed = await loadFeed(canonicalPodcast.feedURL);
-              if (feed && feed.episodes) {
-                // eslint-disable-line @typescript-eslint/prefer-optional-chain
-                episodes = feed.episodes;
-              }
-            }
-
-            const feedCanonicalEpisode: IFeedEpisode | undefined = find(
-              episodes,
-              {
-                title: searchCriteria.episodeTitle,
-              }
-            );
-
-            if (feedCanonicalEpisode) {
-              console.log("Adding canonical episode.");
-              try {
-                canonicalEpisode = await CanonicalEpisode.create({
-                  title: feedCanonicalEpisode.title,
-                  searchTitle: makeSearchSafeString(feedCanonicalEpisode.title),
-                  canonicalPodcastId: canonicalPodcast.id,
-                  description: feedCanonicalEpisode.description,
-                  publishDate: new Date(feedCanonicalEpisode.published),
-                  episodeType: feedCanonicalEpisode.episodeType,
-                  duration: feedCanonicalEpisode.duration,
-                  guid: feedCanonicalEpisode.guid,
-                  enclosureURL: feedCanonicalEpisode.enclosure.url,
-                  artworkURL: feedCanonicalEpisode.image,
-                }).then((entity) => entity.get({ plain: true }));
-              } catch (error: unknown) {
-                console.log("Error while inserting podcast.", error);
-              }
-            }
-          }
-
-          if (canonicalEpisode && canonicalEpisode) {
-            // We have a canonical version of the podcast and the episode in the database.
-            // Add the platform podcasts / episodes.
-            const activePlatforms: {
-              [key: string]: IPlatformClient;
-            } = await getActivePlatformClients();
-
-            await Promise.all(
-              Object.values(
-                activePlatforms
-              ).map(async (client: IPlatformClient) =>
-                client.ensurePodcastEpisode(canonicalPodcast, canonicalEpisode)
-              )
-            );
-
-            // Add the platform episode URL for future lookups.
-            await PlatformEpisodeURL.findOrCreate({
-              where: {
-                platformEpisodeURL,
-                episodeId: canonicalEpisode.id,
-                platformId: platform.id,
-              },
-            });
-          }
-
-          const result = await getEpisodeByShareURL(platformEpisodeURL);
-          if (result) {
-            return result;
-          }
+        const result = await getEpisodeByShareURL(platformEpisodeURL);
+        if (result) {
+          return result;
         }
       }
     }
