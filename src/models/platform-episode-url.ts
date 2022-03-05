@@ -1,36 +1,47 @@
-import {Model, Column, Table, BelongsTo, ForeignKey, Unique} from 'sequelize-typescript';
-import {Optional} from 'sequelize/types';
-import CanonicalEpisode from './00-canonical-episode';
-import Platform from './00-platform';
+import {
+  Model,
+  Column,
+  Table,
+  BelongsTo,
+  ForeignKey,
+  Unique,
+} from "sequelize-typescript";
+import { Optional } from "sequelize/types";
+import CanonicalEpisode from "./00-canonical-episode";
+import Platform from "./00-platform";
 
 interface PlatformEpisodeURLAttributes {
-	id: number;
-	episodeId: number;
-	platformId: number;
-	platformEpisodeURL: string;
+  id: number;
+  episodeId: number;
+  platformId: number;
+  platformEpisodeURL: string;
 }
 
-interface PlatformEpisodeURLCreationAttributes extends Optional<PlatformEpisodeURLAttributes, 'id'> { }
+interface PlatformEpisodeURLCreationAttributes
+  extends Optional<PlatformEpisodeURLAttributes, "id"> {}
 
 @Table({
-	timestamps: true,
-	paranoid: true
+  timestamps: true,
+  paranoid: true,
 })
-class PlatformEpisodeURL extends Model<PlatformEpisodeURLAttributes, PlatformEpisodeURLCreationAttributes> {
-	@Unique
-	@Column
-	platformEpisodeURL!: string;
+class PlatformEpisodeURL extends Model<
+  PlatformEpisodeURLAttributes,
+  PlatformEpisodeURLCreationAttributes
+> {
+  @Unique
+  @Column
+  declare platformEpisodeURL: string;
 
-	@BelongsTo(() => CanonicalEpisode)
-	episode!: CanonicalEpisode;
+  @BelongsTo(() => CanonicalEpisode)
+  declare episode: CanonicalEpisode;
 
-	@ForeignKey(() => CanonicalEpisode)
-	episodeId: number;
+  @ForeignKey(() => CanonicalEpisode)
+  declare episodeId: number;
 
-	@BelongsTo(() => Platform)
-	platform!: Platform;
+  @BelongsTo(() => Platform)
+  declare platform: Platform;
 
-	@ForeignKey(() => Platform)
-	platformId!: number;
+  @ForeignKey(() => Platform)
+  declare platformId: number;
 }
 export default PlatformEpisodeURL;

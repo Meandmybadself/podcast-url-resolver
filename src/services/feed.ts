@@ -90,16 +90,14 @@ export const loadAndUpsertFeed = async (
         identity
       );
 
-      const [canonicalPodcast, wasCreated]: [
-        ICanonicalPodcast,
-        boolean
-      ] = await CanonicalPodcast.findOrCreate({
-        where,
-        plain: true,
-      }).then(([canonicalPodcast, wasCreated]) => [
-        canonicalPodcast.get({ plain: true }),
-        wasCreated,
-      ]);
+      const [canonicalPodcast, wasCreated]: [ICanonicalPodcast, boolean] =
+        await CanonicalPodcast.findOrCreate({
+          where,
+          plain: true,
+        }).then(([canonicalPodcast, wasCreated]) => [
+          canonicalPodcast.get({ plain: true }),
+          wasCreated,
+        ]);
 
       if (!wasCreated) {
         // Associate categories w/ pod.
@@ -132,9 +130,11 @@ export const loadAndUpsertFeed = async (
       }
 
       // Associate all feed episodes.
-      const episodes: ICanonicalEpisode[] = await Promise.all(
-        feedEpisodes.map(
-          async ({
+      // This is expensive for big podcasts.
+      // Mebbe bulk write & then select?
+      await CanonicalEpisode.bulkCreate(
+        feedEpisodes.map((episode: IFeedEpisode) => {
+          const {
             description,
             duration,
             enclosure,
@@ -143,30 +143,30 @@ export const loadAndUpsertFeed = async (
             image: artworkURL,
             published: publishDate,
             title,
-          }: IFeedEpisode) => {
-            // Don't let undefined values affect the search.
-            const where = pickBy(
-              {
-                artworkURL: artworkURL,
-                description,
-                duration,
-                enclosureURL: enclosure?.url,
-                episodeType: episodeType,
-                guid,
-                canonicalPodcastId: canonicalPodcast.id,
-                publishDate,
-                searchTitle: makeSearchSafeString(title),
-                title,
-              },
-              identity
-            );
+          } = episode;
 
-            return CanonicalEpisode.findOrCreate({
-              where,
-            }).then(([episode, _wasCreated]) => episode.get({ plain: true }));
-          }
-        )
+          return pickBy(
+            {
+              artworkURL,
+              description,
+              duration,
+              enclosureURL: enclosure?.url,
+              episodeType,
+              guid,
+              canonicalPodcastId: canonicalPodcast.id,
+              publishDate,
+              searchTitle: makeSearchSafeString(title),
+              title,
+            },
+            identity
+          );
+        })
       );
+
+      const episodes = await CanonicalEpisode.findAll({
+        where: { canonicalPodcastId: canonicalPodcast.id },
+        raw: true,
+      });
 
       return { ...canonicalPodcast, episodes };
     } else {

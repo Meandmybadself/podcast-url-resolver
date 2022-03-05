@@ -1,36 +1,47 @@
-import {Model, Column, Table, BelongsTo, ForeignKey, Unique} from 'sequelize-typescript';
-import {Optional} from 'sequelize/types';
-import Platform from './00-platform';
-import CanonicalPodcast from './00-canonical-podcast';
+import {
+  Model,
+  Column,
+  Table,
+  BelongsTo,
+  ForeignKey,
+  Unique,
+} from "sequelize-typescript";
+import { Optional } from "sequelize/types";
+import Platform from "./00-platform";
+import CanonicalPodcast from "./00-canonical-podcast";
 
 interface IPlatformPodcast {
-	id: number;
-	platformId: number;
-	canonicalPodcastId: number;
-	platformPodcastId: string;
+  id: number;
+  platformId: number;
+  canonicalPodcastId: number;
+  platformPodcastId: string;
 }
 
-interface PlatformPodcastCreationAttributes extends Optional<IPlatformPodcast, 'id'> { }
+interface PlatformPodcastCreationAttributes
+  extends Optional<IPlatformPodcast, "id"> {}
 
 @Table({
-	paranoid: true
+  paranoid: true,
 })
-class PlatformPodcast extends Model<IPlatformPodcast, PlatformPodcastCreationAttributes> {
-	@BelongsTo(() => Platform)
-	platform!: Platform;
+class PlatformPodcast extends Model<
+  IPlatformPodcast,
+  PlatformPodcastCreationAttributes
+> {
+  @BelongsTo(() => Platform)
+  declare platform: Platform;
 
-	@ForeignKey(() => Platform)
-	platformId!: number;
+  @ForeignKey(() => Platform)
+  declare platformId: number;
 
-	@BelongsTo(() => CanonicalPodcast)
-	canonicalPodcast!: CanonicalPodcast;
+  @BelongsTo(() => CanonicalPodcast)
+  declare canonicalPodcast: CanonicalPodcast;
 
-	@ForeignKey(() => CanonicalPodcast)
-	canonicalPodcastId!: number;
+  @ForeignKey(() => CanonicalPodcast)
+  declare canonicalPodcastId: number;
 
-	@Unique
-	@Column
-	platformPodcastId!: string;
+  @Unique
+  @Column
+  declare platformPodcastId: string;
 }
 
 export default PlatformPodcast;

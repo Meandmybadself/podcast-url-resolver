@@ -1,28 +1,39 @@
-import {Model, Column, Table, Unique, ForeignKey, BelongsTo} from 'sequelize-typescript';
-import {Optional} from 'sequelize/types';
-import Platform from './00-platform';
+import {
+  Model,
+  Column,
+  Table,
+  Unique,
+  ForeignKey,
+  BelongsTo,
+} from "sequelize-typescript";
+import { Optional } from "sequelize/types";
+import Platform from "./00-platform";
 
 interface PlatformHostAttributes {
-	id: number;
-	hostname: string;
-	platformId: number;
+  id: number;
+  hostname: string;
+  platformId: number;
 }
 
-interface PlatformHostCreationAttributes extends Optional<PlatformHostAttributes, 'id'> { }
+interface PlatformHostCreationAttributes
+  extends Optional<PlatformHostAttributes, "id"> {}
 
 @Table({
-	timestamps: false,
-	paranoid: true
+  timestamps: false,
+  paranoid: true,
 })
-class PlatformHost extends Model<PlatformHostAttributes, PlatformHostCreationAttributes> {
-	@Unique
-	@Column
-	hostname!: string;
+class PlatformHost extends Model<
+  PlatformHostAttributes,
+  PlatformHostCreationAttributes
+> {
+  @Unique
+  @Column
+  declare hostname: string;
 
-	@BelongsTo(() => Platform)
-	platform: Platform;
+  @BelongsTo(() => Platform)
+  platform: Platform;
 
-	@ForeignKey(() => Platform)
-	platformId: number;
+  @ForeignKey(() => Platform)
+  declare platformId: number;
 }
 export default PlatformHost;

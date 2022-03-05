@@ -53,8 +53,9 @@ interface IAppleLookupResult {
 
 export default class Apple
   extends BasePlatformClient
-  implements IPlatformClient {
-  _id: string;
+  implements IPlatformClient
+{
+  // _id: string;
 
   constructor() {
     super();

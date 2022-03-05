@@ -14,7 +14,7 @@ import logger from "../../utilities/log";
 
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 // Go get an auth cookie with a raw https request, like the amish did.
-const getAuthCookie = async () =>
+const getAuthCookie = async (): Promise<string> =>
   new Promise((resolve, reject) => {
     try {
       const request = https.request(
@@ -66,9 +66,10 @@ const getAuthCookie = async () =>
 
 export default class Overcast
   extends BasePlatformClient
-  implements IPlatformClient {
+  implements IPlatformClient
+{
   _axiosInstance: AxiosInstance;
-  _id: string;
+  // _id: string;
 
   constructor() {
     super();
@@ -106,7 +107,7 @@ export default class Overcast
   ): Promise<ISearchCriteria | void> {
     try {
       const { data } = await this._axiosInstance.get(shareURL);
-      const $ = cheerio.load(data);
+      const $: cheerio.Root = cheerio.load(data);
       const podcastTitle: string = $("h3 > a").text();
       const episodeTitle: string = $("h2").text();
 

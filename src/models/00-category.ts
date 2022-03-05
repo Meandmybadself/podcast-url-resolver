@@ -1,12 +1,12 @@
-import {Model, Column, Table, Unique} from 'sequelize-typescript';
+import { Model, Column, Table, Unique } from "sequelize-typescript";
 
 @Table({
-	paranoid: true
+  paranoid: true,
 })
 class Category extends Model<Category> {
-	@Unique
-	@Column
-	label!: string;
+  @Unique
+  @Column
+  declare label: string;
 }
 
 export default Category;

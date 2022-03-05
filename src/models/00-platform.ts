@@ -1,29 +1,37 @@
-import {Model, Column, Table, Unique, Index, Default, HasMany} from 'sequelize-typescript';
-import {Optional} from 'sequelize/types';
-import PlatformHost from './platform-host';
-import {IPlatform} from '../interfaces';
+import {
+  Model,
+  Column,
+  Table,
+  Unique,
+  Index,
+  Default,
+  HasMany,
+} from "sequelize-typescript";
+import { Optional } from "sequelize/types";
+import PlatformHost from "./platform-host";
+import { IPlatform } from "../interfaces";
 
-interface PlatformCreationAttributes extends Optional<IPlatform, 'id'> { }
+interface PlatformCreationAttributes extends Optional<IPlatform, "id"> {}
 
 @Table({
-	timestamps: false,
-	paranoid: true
+  timestamps: false,
+  paranoid: true,
 })
 class Platform extends Model<IPlatform, PlatformCreationAttributes> {
-	@Unique
-	@Column
-	name!: string;
+  @Unique
+  @Column
+  declare name: string;
 
-	@Unique
-	@Column
-	platformId!: string;
+  @Unique
+  @Column
+  declare platformId: string;
 
-	@Index
-	@Default(true)
-	@Column
-	isActive: boolean;
+  @Index
+  @Default(true)
+  @Column
+  declare isActive: boolean;
 
-	@HasMany(() => PlatformHost)
-	platformHosts: PlatformHost[];
+  @HasMany(() => PlatformHost)
+  platformHosts: PlatformHost[];
 }
 export default Platform;

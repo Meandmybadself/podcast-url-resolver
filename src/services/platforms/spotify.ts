@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestHeaders, AxiosResponse } from "axios";
 import { find, some } from "lodash";
 import {
   ICanonicalEpisode,
@@ -48,10 +48,11 @@ interface SpotifyEpisode {
 
 export default class Spotify
   extends BasePlatformClient
-  implements IPlatformClient {
+  implements IPlatformClient
+{
   static _token: string;
   static _tokenExpiry: number;
-  _id: string;
+  // _id: string;
 
   constructor() {
     super();
@@ -92,23 +93,21 @@ export default class Spotify
     console.log("Getting spotify token.");
 
     try {
-      const headers = {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        auth: {
-          username: process.env.SPOTIFY_CLIENT_ID,
-          password: process.env.SPOTIFY_SECRET,
-        },
+      const headers: AxiosRequestHeaders = {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       };
       const data = {
         grant_type: "client_credentials",
       };
 
-      const response = await axios({
+      const response: AxiosResponse = await axios({
         url: "https://accounts.spotify.com/api/token",
         data: qs.stringify(data),
+        auth: {
+          username: process.env.SPOTIFY_CLIENT_ID,
+          password: process.env.SPOTIFY_SECRET,
+        },
         headers,
         timeout: 10000,
       });

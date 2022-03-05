@@ -23,50 +23,50 @@ class CanonicalEpisode extends Model<
 > {
   @Index
   @Column
-  title!: string;
+  declare title: string;
 
   @Index
   @Column
-  searchTitle!: string;
+  declare searchTitle: string;
 
   @BelongsTo(() => CanonicalPodcast)
-  canonicalPodcast: CanonicalPodcast;
+  declare canonicalPodcast: CanonicalPodcast;
 
   @ForeignKey(() => CanonicalPodcast)
-  canonicalPodcastId: number;
+  declare canonicalPodcastId: number;
 
   @Column({
     type: DataTypes.TEXT,
   })
-  description!: string;
+  declare description: string;
 
   @Index
   @Column({
     type: DataTypes.TEXT,
   })
-  guid: string;
+  declare guid: string;
 
   @AllowNull
   @Default(-1)
   @Column
-  duration?: number;
+  declare duration?: number;
 
   @AllowNull
   @Column({
     type: DataTypes.TEXT,
   })
-  artworkURL?: string;
+  declare artworkURL?: string;
 
   @Column
-  publishDate: Date;
+  declare publishDate: Date;
 
   @AllowNull
   @Column
-  episodeType?: string;
+  declare episodeType?: string;
 
   @Column({
     type: DataTypes.TEXT,
   })
-  enclosureURL?: string;
+  declare enclosureURL?: string;
 }
 export default CanonicalEpisode;

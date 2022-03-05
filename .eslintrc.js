@@ -5,25 +5,25 @@ module.exports = {
     node: true,
   },
   extends: [
-    'eslint:recommended',
-    'plugin:prettier/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module',
+    sourceType: "module",
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ["@typescript-eslint"],
   rules: {
-    '@typescript-eslint/no-unused-vars': [
-      'error',
+    "@typescript-eslint/no-unused-vars": [
+      "error",
       {
-        vars: 'all',
-        args: 'after-used',
+        vars: "all",
+        args: "after-used",
         ignoreRestSiblings: true,
-        argsIgnorePattern: '^_',
+        argsIgnorePattern: "^_",
       },
     ],
     "@typescript-eslint/dot-notation": 0,
@@ -35,15 +35,14 @@ module.exports = {
     "@typescript-eslint/no-unsafe-call": 0,
     "no-case-declarations": 0,
     "@typescript-eslint/no-misused-promises": 0,
-    "@typescript-eslint/no-unsafe-return": 0
-
+    "@typescript-eslint/no-unsafe-return": 0,
   },
   overrides: [
     {
-      files: ['*.ts', '*.tsx'], // Your TypeScript files extension
+      files: ["*.ts", "*.tsx"], // Your TypeScript files extension
       parserOptions: {
-        project: ['./tsconfig.json'], // Specify it only for TypeScript files
+        project: ["./tsconfig.json"], // Specify it only for TypeScript files
       },
-    }
-  ]
-}
+    },
+  ],
+};

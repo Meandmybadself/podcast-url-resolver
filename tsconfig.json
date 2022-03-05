@@ -2,10 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "lib": [
-      "esnext",
-      "DOM"
-    ],
+    "lib": ["esnext", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noUnusedLocals": false,
@@ -16,7 +13,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

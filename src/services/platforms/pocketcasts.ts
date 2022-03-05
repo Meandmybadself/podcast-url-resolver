@@ -33,8 +33,9 @@ interface IPocketCastEpisodeSearchResult {
 
 export default class Pocketcasts
   extends BasePlatformClient
-  implements IPlatformClient {
-  _id: string;
+  implements IPlatformClient
+{
+  // _id: string;
 
   constructor() {
     super();
@@ -120,9 +121,8 @@ export default class Pocketcasts
       return;
     }
 
-    const platformPodcastId:
-      | string
-      | void = await Pocketcasts.fetchPodcastIdByTitle(canonicalPodcast.title);
+    const platformPodcastId: string | void =
+      await Pocketcasts.fetchPodcastIdByTitle(canonicalPodcast.title);
 
     if (platformPodcastId) {
       await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
@@ -134,13 +134,12 @@ export default class Pocketcasts
         const episodeSearchTitle: string = makeSearchSafeString(
           canonicalEpisode.title
         );
-        const matchingEpisode:
-          | IPocketCastEpisodeSearchResult
-          | undefined = find(
-          episodeRequest.podcast.episodes,
-          (episode: IPocketCastEpisodeSearchResult) =>
-            makeSearchSafeString(episode.title) === episodeSearchTitle
-        );
+        const matchingEpisode: IPocketCastEpisodeSearchResult | undefined =
+          find(
+            episodeRequest.podcast.episodes,
+            (episode: IPocketCastEpisodeSearchResult) =>
+              makeSearchSafeString(episode.title) === episodeSearchTitle
+          );
 
         if (matchingEpisode) {
           await this.upsertPlatformEpisode(

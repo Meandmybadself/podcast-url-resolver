@@ -40,8 +40,9 @@ interface IHeartRadioDescriptorObject {
 
 export default class IHeartRadio
   extends BasePlatformClient
-  implements IPlatformClient {
-  _id: string;
+  implements IPlatformClient
+{
+  // _id: string;
 
   constructor() {
     super();
@@ -59,21 +60,19 @@ export default class IHeartRadio
     if (platformPodcastSearchResults?.results?.podcasts?.length) {
       const matchingPodcast = find(
         platformPodcastSearchResults.results.podcasts,
-        (podcast: any) =>
+        (podcast: ICanonicalPodcast) =>
           makeSearchSafeString(title) === makeSearchSafeString(podcast.title)
       );
       if (matchingPodcast) {
         return matchingPodcast;
       }
     }
-
     logger.error(`Could not fetch iheartradio podcast by title: ${title}`);
   }
 
   static async fetchPodcastURLByTitle(title: string): Promise<string | void> {
-    const podcast: IHeartRadioPodcastResult | void = await IHeartRadio.fetchPodcastByTitle(
-      title
-    );
+    const podcast: IHeartRadioPodcastResult | void =
+      await IHeartRadio.fetchPodcastByTitle(title);
     if (podcast) {
       return `https://www.iheart.com/podcast/${podcast.id}/`;
     }
@@ -115,12 +114,12 @@ export default class IHeartRadio
     canonicalPodcast: ICanonicalPodcast,
     canonicalEpisode: ICanonicalEpisode
   ): Promise<void> {
-    const platformPodcastSearchResult: IHeartRadioPodcastResult | void = await IHeartRadio.fetchPodcastByTitle(
-      canonicalPodcast.title
-    );
+    const platformPodcastSearchResult: IHeartRadioPodcastResult | void =
+      await IHeartRadio.fetchPodcastByTitle(canonicalPodcast.title);
 
     if (platformPodcastSearchResult) {
-      const platformPodcastId: string = platformPodcastSearchResult.id.toString();
+      const platformPodcastId: string =
+        platformPodcastSearchResult.id.toString();
 
       await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
 
@@ -130,7 +129,7 @@ export default class IHeartRadio
       if (platformEpisodeSearchResults?.data?.length) {
         const matchingEpisode: IHeartRadioEpisodeResult = find(
           platformEpisodeSearchResults.data,
-          (episode: any) =>
+          (episode: ICanonicalEpisode) =>
             canonicalEpisode.searchTitle === makeSearchSafeString(episode.title)
         );
         if (matchingEpisode) {

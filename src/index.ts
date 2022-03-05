@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 // import * as Tracing from '@sentry/tracing';
 
-console.log(`🎧 Episodes.fm - ${process.env.ENV}`);
+console.log(`🎧 Episodes.fm starting in ${process.env.ENV} mode.`);
 
 import sequelize from "./sequelize"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { initExpress } from "./express";

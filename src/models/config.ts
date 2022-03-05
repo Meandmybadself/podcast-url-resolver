@@ -1,16 +1,16 @@
-import {Model, Column, Table, Unique} from 'sequelize-typescript';
+import { Model, Column, Table, Unique } from "sequelize-typescript";
 
 @Table({
-	paranoid: true,
-	timestamps: false
+  paranoid: true,
+  timestamps: false,
 })
 class Config extends Model<Config> {
-	@Unique
-	@Column
-	key!: string;
+  @Unique
+  @Column
+  declare key: string;
 
-	@Column
-	value: string;
+  @Column
+  declare value: string;
 }
 
 export default Config;

@@ -97,27 +97,26 @@ export const lookupEpisodeByShareURL = async (
           where: { feedURL: searchCriteria.feedURL },
           plain: true,
         });
-      }
 
-      if (!canonicalPodcast) {
-        // We didn't find a feedURL-based podcast.
-        // Do we have a canonical podcast in the db that matches title?
-        const searchTitle: string = makeSearchSafeString(
-          searchCriteria.podcastTitle
-        );
-        canonicalPodcast = await CanonicalPodcast.findOne({
-          where: { searchTitle },
-          plain: true,
-        });
+        if (!canonicalPodcast) {
+          // We didn't find a feedURL-based podcast.
+          // Do we have a canonical podcast in the db that matches title?
+          const searchTitle: string = makeSearchSafeString(
+            searchCriteria.podcastTitle
+          );
+          canonicalPodcast = await CanonicalPodcast.findOne({
+            where: { searchTitle },
+            plain: true,
+          });
+        }
       }
 
       if (!canonicalPodcast) {
         console.log(`Podcastindex lookup: "${searchCriteria.podcastTitle}"`);
         // We don't have a canonical podcast in the db.
         // Let's ask Podcastindex if it knows about this pod.
-        const podcastIndexResult: IPodcastIndexSearchResponse = await podcastIndexAPI.searchByTerm(
-          searchCriteria.podcastTitle
-        );
+        const podcastIndexResult: IPodcastIndexSearchResponse =
+          await podcastIndexAPI.searchByTerm(searchCriteria.podcastTitle);
 
         // Get rid of podcasts we can't use.
         if (podcastIndexResult?.feeds?.length) {
@@ -149,9 +148,8 @@ export const lookupEpisodeByShareURL = async (
               itunesId: number;
               id: number;
             } = podcastTitleMatch;
-            const podcastWithEpisodes: ICanonicalPodcastWithEpisodes | void = await loadAndUpsertFeed(
-              url
-            );
+            const podcastWithEpisodes: ICanonicalPodcastWithEpisodes | void =
+              await loadAndUpsertFeed(url);
 
             if (podcastWithEpisodes) {
               canonicalPodcast = omit(podcastWithEpisodes, ["episodes"]);
@@ -238,7 +236,7 @@ export const lookupEpisodeByShareURL = async (
           }
         }
 
-        if (canonicalEpisode && canonicalEpisode) {
+        if (canonicalPodcast && canonicalEpisode) {
           // We have a canonical version of the podcast and the episode in the database.
           // Add the platform podcasts / episodes.
           const activePlatforms: {
@@ -246,10 +244,9 @@ export const lookupEpisodeByShareURL = async (
           } = await getActivePlatformClients();
 
           await Promise.all(
-            Object.values(
-              activePlatforms
-            ).map(async (client: IPlatformClient) =>
-              client.ensurePodcastEpisode(canonicalPodcast, canonicalEpisode)
+            Object.values(activePlatforms).map(
+              async (client: IPlatformClient) =>
+                client.ensurePodcastEpisode(canonicalPodcast, canonicalEpisode)
             )
           );
 
@@ -341,6 +338,7 @@ const getActivePlatformClients = async (): Promise<{
   clientIds.forEach((clientId: string) => {
     clients[clientId] = PLATFORM_CLIENTS[clientId];
   });
+  debugger;
   return clients;
 };
 
@@ -354,6 +352,7 @@ export const lookupEpisodeByFeedURLAndGUID = async (
   const feed: ICanonicalPodcastWithEpisodes | void = await loadAndUpsertFeed(
     feedURL
   );
+
   if (feed) {
     const canonicalPodcast: ICanonicalPodcast = omit(feed, ["episodes"]);
     const canonicalEpisode: ICanonicalEpisode | undefined = find(
@@ -395,11 +394,10 @@ export const lookupPodcastByFeedURL = async (
   feedURL = normalizeUrl(feedURL);
 
   // Do we have a podcast w/ that feed URL?
-  let canonicalPodcast: ICanonicalPodcast | void = await CanonicalPodcast.findOne(
-    {
+  let canonicalPodcast: ICanonicalPodcast | void =
+    await CanonicalPodcast.findOne({
       where: { feedURL },
-    }
-  ).then((entity) => entity?.get({ plain: true }));
+    }).then((entity) => entity?.get({ plain: true }));
 
   if (!canonicalPodcast) {
     canonicalPodcast = await loadAndUpsertFeed(feedURL);

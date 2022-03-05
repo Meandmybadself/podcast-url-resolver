@@ -23,67 +23,67 @@ class CanonicalPodcast extends Model<
 > {
   @Index
   @Column
-  title!: string;
+  declare title: string;
 
   @Index
   @Column
-  searchTitle!: string;
+  declare searchTitle: string;
 
   @Column({
     type: DataTypes.TEXT,
   })
-  description: string;
+  declare description: string;
 
   @Column
-  language: string;
+  declare language: string;
 
   @Index
   @Column({
     type: DataTypes.TEXT,
   })
-  feedURL: string;
+  declare feedURL: string;
 
   @AllowNull
   @Column
-  explicit: boolean;
+  declare explicit: boolean;
 
   @AllowNull
   @Column
-  copyright?: string;
+  declare copyright?: string;
 
   @Column({
     type: DataTypes.TEXT,
   })
-  artworkURL: string;
+  declare artworkURL: string;
 
   @Column
-  author: string;
-
-  @AllowNull
-  @Column
-  ownerName?: string;
+  declare author: string;
 
   @AllowNull
   @Column
-  ownerEmail?: string;
+  declare ownerName?: string;
 
   @AllowNull
   @Column
-  link: string;
-
-  @Column
-  updated: Date;
+  declare ownerEmail?: string;
 
   @AllowNull
   @Column
-  type: string;
+  declare link: string;
+
+  @Column
+  declare updated: Date;
+
+  @AllowNull
+  @Column
+  declare type: string;
 
   @HasMany(() => CanonicalEpisode)
   episodes: CanonicalEpisode[];
 
   @Default(Date.now())
   @Column
-  lastChecked: Date;
+  declare lastChecked: Date;
 }
 
 export default CanonicalPodcast;

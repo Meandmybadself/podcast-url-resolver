@@ -76,8 +76,9 @@ const sanitizeStitcherQuery = (string: string): string =>
 
 export default class Stitcher
   extends BasePlatformClient
-  implements IPlatformClient {
-  _id: string;
+  implements IPlatformClient
+{
+  // _id: string;
 
   constructor() {
     super();
@@ -133,9 +134,8 @@ export default class Stitcher
     canonicalEpisode: ICanonicalEpisode
   ): Promise<void> {
     // We need the numerical ID and the slug for looking up a podcast.
-    const stitcherPodcast: IStitcherPodcast | void = await Stitcher._searchForPodcast(
-      canonicalPodcast.title
-    );
+    const stitcherPodcast: IStitcherPodcast | void =
+      await Stitcher._searchForPodcast(canonicalPodcast.title);
     let platformPodcast: any;
     if (stitcherPodcast) {
       await this.upsertPlatformPodcast(canonicalPodcast, stitcherPodcast.slug);
