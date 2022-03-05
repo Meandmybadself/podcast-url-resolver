@@ -15,7 +15,7 @@
     "lint:tsc": "tsc --noEmit",
     "lint:xo": "xo --fix",
     "start": "node dist/index.js",
-    "postinstall": "tsc -p tsconfig.production.json && npm run copy:files",
+    "heroku-postbuild": "tsc -p tsconfig.production.json && npm run copy:files",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
     "kill:debugger": "kill -9 $(lsof -t -i tcp:9229)",
