@@ -19,7 +19,7 @@ export const requiresAuth = async (
   next: NextFunction
 ): Promise<void> => {
 
-  if (process.env.AUTH_DISABLED === "true") {
+  if (process.env.AUTH_DISABLED === "1") {
     return next();
   }
 
