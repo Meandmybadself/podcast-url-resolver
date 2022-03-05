@@ -109,6 +109,7 @@ _Request all the data we've just added_
 - Respond with the thirdPartyURLs.
 
 ### Potential issues?
-
 - Looking up CanonicalPodcast by title in share URL lookup could result in problems with same-named podcasts.
+
+### Open Questions
 - Does Podcast Index have better title search yet?
