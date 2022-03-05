@@ -18,6 +18,11 @@ export const requiresAuth = async (
   response: EpisodeResponse,
   next: NextFunction
 ): Promise<void> => {
+
+  if (process.env.AUTH_DISABLED === "true") {
+    return next();
+  }
+
   const bearer: string = request.headers.authorization;
 
   if (bearer?.trim()) {
