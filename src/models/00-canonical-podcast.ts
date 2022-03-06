@@ -6,6 +6,7 @@ import {
   Default,
   Index,
   AllowNull,
+  Unique,
 } from "sequelize-typescript";
 import { Optional, DataTypes } from "sequelize";
 
@@ -18,10 +19,11 @@ type PodcastCreationAttributes = Optional<ICanonicalPodcast, "id">;
   paranoid: true,
 })
 class CanonicalPodcast extends Model<
-  ICanonicalPodcast,
-  PodcastCreationAttributes
+ICanonicalPodcast,
+PodcastCreationAttributes
 > {
   @Index
+  @Unique
   @Column
   declare title: string;
 
@@ -38,6 +40,7 @@ class CanonicalPodcast extends Model<
   declare language: string;
 
   @Index
+  @Unique
   @Column({
     type: DataTypes.TEXT,
   })

@@ -7,6 +7,7 @@ import {
   ForeignKey,
   AllowNull,
   Index,
+  Unique,
 } from "sequelize-typescript";
 import { DataTypes, Optional } from "sequelize";
 import CanonicalPodcast from "./00-canonical-podcast";
@@ -18,8 +19,8 @@ type EpisodeCreationAttributes = Optional<ICanonicalEpisode, "id">;
   paranoid: true,
 })
 class CanonicalEpisode extends Model<
-  ICanonicalEpisode,
-  EpisodeCreationAttributes
+ICanonicalEpisode,
+EpisodeCreationAttributes
 > {
   @Index
   @Column
@@ -41,6 +42,7 @@ class CanonicalEpisode extends Model<
   declare description: string;
 
   @Index
+  @Unique
   @Column({
     type: DataTypes.TEXT,
   })

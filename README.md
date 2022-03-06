@@ -110,6 +110,7 @@ _Request all the data we've just added_
 
 ### Potential issues?
 - Looking up CanonicalPodcast by title in share URL lookup could result in problems with same-named podcasts.
+- Canonical Podcast lookup isn't working when adding a canonical podcast.
 
 ### Open Questions
 - Does Podcast Index have better title search yet?

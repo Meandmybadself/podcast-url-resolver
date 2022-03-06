@@ -160,7 +160,10 @@ export const loadAndUpsertFeed = async (
             },
             identity
           );
-        })
+        }),
+        {
+          ignoreDuplicates: true
+        }
       );
 
       const episodes = await CanonicalEpisode.findAll({
