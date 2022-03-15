@@ -52,6 +52,7 @@ const getAuthCookie = async (): Promise<string> =>
 
           logger.error("Failed to authenticate with Overcast.");
           reject(new Error("Login to Overcast failed"));
+          return;
         }
       );
 
@@ -66,8 +67,7 @@ const getAuthCookie = async (): Promise<string> =>
 
 export default class Overcast
   extends BasePlatformClient
-  implements IPlatformClient
-{
+  implements IPlatformClient {
   _axiosInstance: AxiosInstance;
   // _id: string;
 
@@ -136,6 +136,9 @@ export default class Overcast
         response = await this._axiosInstance.get(podcastURL);
         const { data } = response;
         const page = cheerio.load(data);
+
+        // console.log(data)
+
         const episode = page("a.extendedepisodecell")
           .toArray()
           .map((element: any) => ({
@@ -146,8 +149,10 @@ export default class Overcast
           .find(
             (element: any) =>
               makeSearchSafeString(element.title) ===
-              makeSearchSafeString(canonicalEpisode.title)
+              makeSearchSafeString(normalizeText(canonicalEpisode.title))
           );
+
+        // console.log('Overcast episode', episode);
 
         if (episode) {
           await this.upsertPlatformEpisode(

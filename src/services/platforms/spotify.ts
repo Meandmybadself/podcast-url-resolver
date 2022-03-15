@@ -48,8 +48,7 @@ interface SpotifyEpisode {
 
 export default class Spotify
   extends BasePlatformClient
-  implements IPlatformClient
-{
+  implements IPlatformClient {
   static _token: string;
   static _tokenExpiry: number;
   // _id: string;
@@ -116,8 +115,9 @@ export default class Spotify
       Spotify._tokenExpiry = now() + result.expires_in;
       Spotify._token = result.access_token;
       console.log("Received Spotify token.");
-    } catch {
+    } catch (e) {
       logger.error("Error while getting token from Spotify");
+      logger.error(e)
     }
   }
 
