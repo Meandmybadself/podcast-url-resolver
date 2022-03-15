@@ -120,7 +120,7 @@ export default class Overcast
     } catch {
       logger.error(`Failed to find Overcast searchCriteria: ${shareURL}`);
     }
-  }
+  } gi
 
   async fetchPlatformEpisode(
     canonicalPodcast: ICanonicalPodcast,
@@ -137,8 +137,6 @@ export default class Overcast
         const { data } = response;
         const page = cheerio.load(data);
 
-        // console.log(data)
-
         const episode = page("a.extendedepisodecell")
           .toArray()
           .map((element: any) => ({
@@ -151,8 +149,6 @@ export default class Overcast
               makeSearchSafeString(element.title) ===
               makeSearchSafeString(normalizeText(canonicalEpisode.title))
           );
-
-        // console.log('Overcast episode', episode);
 
         if (episode) {
           await this.upsertPlatformEpisode(
