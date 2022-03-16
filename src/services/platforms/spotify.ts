@@ -1,5 +1,5 @@
 import axios, { AxiosRequestHeaders, AxiosResponse } from "axios";
-import { find, some } from "lodash";
+import { some } from "lodash";
 import {
   ICanonicalEpisode,
   ICanonicalPodcast,
@@ -68,8 +68,7 @@ export default class Spotify
     const episodeSearchResponse = await Spotify._getWithToken(url);
     const searchEpisodeTitle: string = makeSearchSafeString(episodeTitle);
     if (episodeSearchResponse?.items?.length) {
-      const matchingEpisode = find(
-        episodeSearchResponse.items,
+      const matchingEpisode = episodeSearchResponse.items.find(
         (episode) => makeSearchSafeString(episode.name) === searchEpisodeTitle
       );
       if (matchingEpisode) {
@@ -89,7 +88,7 @@ export default class Spotify
       return;
     }
 
-    console.log("Getting spotify token.");
+    console.log("🔐 Getting spotify token.");
 
     try {
       const headers: AxiosRequestHeaders = {
@@ -101,20 +100,20 @@ export default class Spotify
       };
 
       const response: AxiosResponse = await axios({
+        method: 'post',
         url: "https://accounts.spotify.com/api/token",
         data: qs.stringify(data),
         auth: {
           username: process.env.SPOTIFY_CLIENT_ID,
           password: process.env.SPOTIFY_SECRET,
         },
-        headers,
-        timeout: 10000,
+        headers
       });
 
       const result: SpotifyResult = response?.data;
       Spotify._tokenExpiry = now() + result.expires_in;
       Spotify._token = result.access_token;
-      console.log("Received Spotify token.");
+      console.log("🔑 Received Spotify token.");
     } catch (e) {
       logger.error("Error while getting token from Spotify");
       logger.error(e)
@@ -151,11 +150,11 @@ export default class Spotify
     if (episodeSearchResponse) {
       const episodes = episodeSearchResponse.shows.items;
       if (some(episodes)) {
-        const matchingPodcast = find(
-          episodes,
+        const matchingPodcast = episodes.find(
           (episode) =>
             makeSearchSafeString(episode.name) === makeSearchSafeString(title)
         );
+
         if (matchingPodcast) {
           return matchingPodcast.id;
         }
@@ -215,24 +214,25 @@ export default class Spotify
 
     // Do we have the platform podcast persisted?
     let platformPodcastId: string;
-    const platformPodcast: any = await PlatformPodcast.findOne({
+    let platformPodcast: any = await PlatformPodcast.findOne({
       where: {
         platformId,
         canonicalPodcastId: canonicalPodcast.id,
       },
     });
     if (platformPodcast) {
+      // We do!
       platformPodcastId = platformPodcast.id;
     } else {
+      // We don't.  Let's search for it.
       const podcastId: string | void = await Spotify.fetchPodcastIDByTitle(
         canonicalPodcast.title
       );
       if (podcastId) {
+        // Just found it.  Insert it.
         platformPodcastId = podcastId;
+        platformPodcast = await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
       }
-    }
-    if (platformPodcastId) {
-      await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
     }
 
     if (platformPodcast) {

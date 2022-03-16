@@ -10,7 +10,7 @@ import { Optional } from "sequelize/types";
 import Platform from "./00-platform";
 import CanonicalPodcast from "./00-canonical-podcast";
 
-interface IPlatformPodcast {
+export interface IPlatformPodcast {
   id: number;
   platformId: number;
   canonicalPodcastId: number;
@@ -18,14 +18,14 @@ interface IPlatformPodcast {
 }
 
 interface PlatformPodcastCreationAttributes
-  extends Optional<IPlatformPodcast, "id"> {}
+  extends Optional<IPlatformPodcast, "id"> { }
 
 @Table({
   paranoid: true,
 })
 class PlatformPodcast extends Model<
-  IPlatformPodcast,
-  PlatformPodcastCreationAttributes
+IPlatformPodcast,
+PlatformPodcastCreationAttributes
 > {
   @BelongsTo(() => Platform)
   declare platform: Platform;

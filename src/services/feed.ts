@@ -20,7 +20,7 @@ export const loadFeed = async (url: string): Promise<IFeed | void> =>
     axios
       .get(url)
       .then(({ data }) => {
-        console.log("Received feed.");
+        console.log("🗒️  Loaded podcast feed.");
         parsePodcast(data, (error: unknown, feed: any) => {
           if (error) {
             console.log("Error while parsing feed", error);
@@ -130,8 +130,7 @@ export const loadAndUpsertFeed = async (
       }
 
       // Associate all feed episodes.
-      // This is expensive for big podcasts.
-      // Mebbe bulk write & then select?
+      // This is expensive for big podcasts (Gross).
       await CanonicalEpisode.bulkCreate(
         feedEpisodes.map((episode: IFeedEpisode) => {
           const {
