@@ -8,7 +8,7 @@ import {
 import BasePlatformClient from "./base-platform";
 import cheerio from "cheerio";
 import Apple from "./apple";
-import { normalizeText, makeSearchSafeString } from "../../utilities/string";
+import { makeSearchSafeString } from "../../utilities/string";
 import https from "https";
 import logger from "../../utilities/log";
 
@@ -142,14 +142,14 @@ export default class Overcast
         const episode = page("a.extendedepisodecell")
           .toArray()
           .map((element: any) => ({
-            title: normalizeText(cheerio(element).find(".title").text()),
+            title: cheerio(element).find(".title").text(),
             overcastId: element.attribs.href,
             overcastURL: `https://overcast.fm${element.attribs.href}`,
           }))
           .find(
             (element: any) =>
               makeSearchSafeString(element.title) ===
-              makeSearchSafeString(normalizeText(canonicalEpisode.title))
+              makeSearchSafeString(canonicalEpisode.title)
           );
 
         if (episode) {
