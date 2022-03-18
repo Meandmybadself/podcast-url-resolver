@@ -19,8 +19,8 @@ type PodcastCreationAttributes = Optional<ICanonicalPodcast, "id">;
   paranoid: true,
 })
 class CanonicalPodcast extends Model<
-ICanonicalPodcast,
-PodcastCreationAttributes
+  ICanonicalPodcast,
+  PodcastCreationAttributes
 > {
   @Index
   @Unique

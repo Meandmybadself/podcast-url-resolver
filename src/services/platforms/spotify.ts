@@ -8,7 +8,7 @@ import {
 } from "../../interfaces";
 import PlatformEpisode from "../../models/platform-episode";
 import PlatformPodcast from "../../models/platform-podcast";
-import { makeSearchSafeString, normalizeText } from "../../utilities/string";
+import { makeSearchSafeString } from "../../utilities/string";
 import { now } from "../../utilities/time";
 import BasePlatformClient from "./base-platform";
 import qs from "qs";
@@ -48,7 +48,8 @@ interface SpotifyEpisode {
 
 export default class Spotify
   extends BasePlatformClient
-  implements IPlatformClient {
+  implements IPlatformClient
+{
   static _token: string;
   static _tokenExpiry: number;
   // _id: string;
@@ -100,14 +101,14 @@ export default class Spotify
       };
 
       const response: AxiosResponse = await axios({
-        method: 'post',
+        method: "post",
         url: "https://accounts.spotify.com/api/token",
         data: qs.stringify(data),
         auth: {
           username: process.env.SPOTIFY_CLIENT_ID,
           password: process.env.SPOTIFY_SECRET,
         },
-        headers
+        headers,
       });
 
       const result: SpotifyResult = response?.data;
@@ -116,7 +117,7 @@ export default class Spotify
       console.log("🔑 Received Spotify token.");
     } catch (e) {
       logger.error("Error while getting token from Spotify");
-      logger.error(e)
+      logger.error(e);
     }
   }
 
@@ -182,8 +183,8 @@ export default class Spotify
       const data = await Spotify._getWithToken(
         `https://api.spotify.com/v1/episodes/${platformPodcastId}?market=US`
       );
-      const podcastTitle = normalizeText(data.show.name);
-      const episodeTitle = normalizeText(data.name);
+      const podcastTitle = data.show.name;
+      const episodeTitle = data.name;
       return {
         podcastTitle,
         episodeTitle,
@@ -231,7 +232,10 @@ export default class Spotify
       if (podcastId) {
         // Just found it.  Insert it.
         platformPodcastId = podcastId;
-        platformPodcast = await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
+        platformPodcast = await this.upsertPlatformPodcast(
+          canonicalPodcast,
+          platformPodcastId
+        );
       }
     }
 

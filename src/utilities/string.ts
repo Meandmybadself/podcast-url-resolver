@@ -1,12 +1,17 @@
+// Airline-rules string normalization for fuzzy string matching.
+// - removes all non-alphanumeric characters
+// - converts to lowercase
+// - removes all vowels
+
 export const makeSearchSafeString = (string: string): string =>
   string.toLowerCase().replace(/[\W|aeiou]+/g, "");
 
-export const normalizeText = (string: string): string =>
+// This should be used to account for inconsistencies in how platforms represent titles.
+export const normalizeString = (string: string): string =>
   string
-    .replace("–", "-") // Em dash
-    .replace("“", '"') // Smart quotes
-    .replace("‘", "'")
-    .replace("”", '"')
-    .replace("’", "'")
-    .trim()
-    .substr(0, 30);
+    .replaceAll("–", "-") // Em dash
+    .replaceAll("“", '"') // Smart quotes
+    .replaceAll("‘", "'")
+    .replaceAll("”", '"')
+    .replaceAll("’", "'")
+    .trim();

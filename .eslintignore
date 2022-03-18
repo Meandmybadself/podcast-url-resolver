@@ -3,3 +3,5 @@
 node_modules
 *.log
 .build
+.eslintrc.js
+jest.config.js

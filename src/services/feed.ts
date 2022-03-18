@@ -2,7 +2,6 @@ import parsePodcast from "node-podcast-parser";
 import axios from "axios";
 import { IFeed } from "../interfaces/feed";
 import {
-  ICanonicalEpisode,
   ICanonicalPodcast,
   ICanonicalPodcastWithEpisodes,
   IFeedEpisode,
@@ -161,7 +160,7 @@ export const loadAndUpsertFeed = async (
           );
         }),
         {
-          ignoreDuplicates: true
+          ignoreDuplicates: true,
         }
       );
 

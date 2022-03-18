@@ -5,7 +5,7 @@ import {
   IPlatformClient,
   ISearchCriteria,
 } from "../../interfaces";
-import { makeSearchSafeString, normalizeText } from "../../utilities/string";
+import { makeSearchSafeString } from "../../utilities/string";
 import BasePlatformClient from "./base-platform";
 import { find } from "lodash";
 import PlatformEpisode from "../../models/platform-episode";
@@ -92,7 +92,7 @@ export default class Pocketcasts
       "meta[property='og:title']"
     )[0].attribs.content.split(" - ");
     const podcastTitle = title.pop();
-    const episodeTitle = normalizeText(title.join(" - "));
+    const episodeTitle = title.join(" - ");
     if (podcastTitle && episodeTitle) {
       return {
         podcastTitle,

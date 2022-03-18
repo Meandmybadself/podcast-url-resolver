@@ -11,7 +11,9 @@ import PlatformEpisode from "../../models/platform-episode";
 import logger from "../../utilities/log";
 import PlatformData from "../platform-data";
 import https from "https";
-import PlatformPodcast, { IPlatformPodcast } from "../../models/platform-podcast";
+import PlatformPodcast, {
+  IPlatformPodcast,
+} from "../../models/platform-podcast";
 import PlatformEpisodeURL from "../../models/platform-episode-url";
 
 export default class BasePlatformClient implements IPlatformClient {

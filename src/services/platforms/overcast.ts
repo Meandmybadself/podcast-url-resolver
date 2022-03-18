@@ -67,7 +67,8 @@ const getAuthCookie = async (): Promise<string> =>
 
 export default class Overcast
   extends BasePlatformClient
-  implements IPlatformClient {
+  implements IPlatformClient
+{
   _axiosInstance: AxiosInstance;
   // _id: string;
 
@@ -120,7 +121,8 @@ export default class Overcast
     } catch {
       logger.error(`Failed to find Overcast searchCriteria: ${shareURL}`);
     }
-  } gi
+  }
+  gi;
 
   async fetchPlatformEpisode(
     canonicalPodcast: ICanonicalPodcast,

@@ -17,15 +17,14 @@ export interface IPlatformPodcast {
   platformPodcastId: string;
 }
 
-interface PlatformPodcastCreationAttributes
-  extends Optional<IPlatformPodcast, "id"> { }
+type PlatformPodcastCreationAttributes = Optional<IPlatformPodcast, "id">;
 
 @Table({
   paranoid: true,
 })
 class PlatformPodcast extends Model<
-IPlatformPodcast,
-PlatformPodcastCreationAttributes
+  IPlatformPodcast,
+  PlatformPodcastCreationAttributes
 > {
   @BelongsTo(() => Platform)
   declare platform: Platform;

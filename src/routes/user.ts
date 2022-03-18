@@ -18,7 +18,6 @@ export const requiresAuth = async (
   response: EpisodeResponse,
   next: NextFunction
 ): Promise<void> => {
-
   if (process.env.AUTH_DISABLED === "1") {
     return next();
   }

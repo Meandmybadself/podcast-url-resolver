@@ -19,8 +19,8 @@ type EpisodeCreationAttributes = Optional<ICanonicalEpisode, "id">;
   paranoid: true,
 })
 class CanonicalEpisode extends Model<
-ICanonicalEpisode,
-EpisodeCreationAttributes
+  ICanonicalEpisode,
+  EpisodeCreationAttributes
 > {
   @Index
   @Column

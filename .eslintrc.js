@@ -3,6 +3,7 @@ module.exports = {
     commonjs: true,
     es6: true,
     node: true,
+    jest: true,
   },
   extends: [
     "eslint:recommended",
@@ -14,6 +15,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",
+    project: "./tsconfig.json",
   },
   plugins: ["@typescript-eslint"],
   rules: {
@@ -36,6 +38,7 @@ module.exports = {
     "no-case-declarations": 0,
     "@typescript-eslint/no-misused-promises": 0,
     "@typescript-eslint/no-unsafe-return": 0,
+    "@typescript-eslint/no-unsafe-argument": 0,
   },
   overrides: [
     {

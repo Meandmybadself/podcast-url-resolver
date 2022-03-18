@@ -12,7 +12,7 @@ import {
   IPodcastIndexPodcast,
 } from "../interfaces";
 import { loadAndUpsertFeed, loadFeed } from "./feed";
-import { makeSearchSafeString } from "../utilities/string";
+import { makeSearchSafeString, normalizeString } from "../utilities/string";
 import CanonicalEpisode from "../models/00-canonical-episode";
 import Overcast from "./platforms/overcast";
 import Platform from "../models/00-platform";
@@ -83,6 +83,15 @@ export const lookupEpisodeByShareURL = async (
     );
 
     if (searchCriteria) {
+      // We have a search criteria.
+      // Normalize the strings to account for platform inconsistencies.
+      searchCriteria.podcastTitle = normalizeString(
+        searchCriteria.podcastTitle
+      );
+      searchCriteria.episodeTitle = normalizeString(
+        searchCriteria.episodeTitle
+      );
+
       console.log("searchCriteria podcast title", searchCriteria.podcastTitle);
       console.log("searchCriteria episode title", searchCriteria.episodeTitle);
 
@@ -338,7 +347,6 @@ const getActivePlatformClients = async (): Promise<{
   clientIds.forEach((clientId: string) => {
     clients[clientId] = PLATFORM_CLIENTS[clientId];
   });
-  debugger;
   return clients;
 };
 
