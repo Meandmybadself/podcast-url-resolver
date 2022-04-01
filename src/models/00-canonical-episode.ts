@@ -34,6 +34,7 @@ class CanonicalEpisode extends Model<
   declare canonicalPodcast: CanonicalPodcast;
 
   @ForeignKey(() => CanonicalPodcast)
+  @Column
   declare canonicalPodcastId: number;
 
   @Column({

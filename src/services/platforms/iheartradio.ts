@@ -110,6 +110,40 @@ export default class IHeartRadio
     this.couldNotFindSearchCriteria(shareURL);
   }
 
+  // Recursive method for scrolling through results looking for an episode title.
+  async _getPlatformEpisodeByTitle(
+    platformPodcastId: string,
+    title: string,
+    pageKey: string
+  ): Promise<IHeartRadioEpisodeResult | null> {
+    let url = `https://us.api.iheart.com/api/v3/podcast/podcasts/${platformPodcastId}/episodes?newEnabled=false&limit=500&sortBy=startDate-desc`;
+    if (pageKey) {
+      url += `&pageKey=${pageKey}`;
+    }
+    const platformEpisodeSearchResults = await BasePlatformClient.getPageData(
+      url
+    );
+    if (platformEpisodeSearchResults?.data?.length) {
+      const matchingEpisode = platformEpisodeSearchResults.data.find(
+        (episode: ICanonicalEpisode) =>
+          makeSearchSafeString(title) === makeSearchSafeString(episode.title)
+      );
+      if (matchingEpisode) {
+        console.log("iHeartRadio: found matching episode: ", matchingEpisode);
+        return matchingEpisode;
+      } else if (platformEpisodeSearchResults.pageKey) {
+        console.log(
+          `iHeartRadio: pageKey: ${platformEpisodeSearchResults.pageKey}`
+        );
+        return await this._getPlatformEpisodeByTitle(
+          platformPodcastId,
+          title,
+          platformEpisodeSearchResults.pageKey
+        );
+      }
+    }
+  }
+
   async fetchPlatformEpisode(
     canonicalPodcast: ICanonicalPodcast,
     canonicalEpisode: ICanonicalEpisode
@@ -123,24 +157,21 @@ export default class IHeartRadio
 
       await this.upsertPlatformPodcast(canonicalPodcast, platformPodcastId);
 
-      const platformEpisodeSearchResults = await BasePlatformClient.getPageData(
-        `https://us.api.iheart.com/api/v3/podcast/podcasts/${platformPodcastId}/episodes?newEnabled=false&limit=500&sortBy=startDate-desc`
-      );
-      if (platformEpisodeSearchResults?.data?.length) {
-        const matchingEpisode: IHeartRadioEpisodeResult = find(
-          platformEpisodeSearchResults.data,
-          (episode: ICanonicalEpisode) =>
-            canonicalEpisode.searchTitle === makeSearchSafeString(episode.title)
+      const matchingEpisode: IHeartRadioEpisodeResult | null =
+        await this._getPlatformEpisodeByTitle(
+          platformPodcastId,
+          canonicalEpisode.title,
+          ""
         );
-        if (matchingEpisode) {
-          await this.upsertPlatformEpisode(
-            canonicalPodcast,
-            canonicalEpisode,
-            matchingEpisode.id.toString()
-          );
-        } else {
-          this.couldNotFetchEpisode(canonicalEpisode);
-        }
+
+      if (matchingEpisode) {
+        await this.upsertPlatformEpisode(
+          canonicalPodcast,
+          canonicalEpisode,
+          matchingEpisode.id.toString()
+        );
+      } else {
+        this.couldNotFetchEpisode(canonicalEpisode);
       }
     }
   }

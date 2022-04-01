@@ -69,14 +69,19 @@ export default class Spotify
     const episodeSearchResponse = await Spotify._getWithToken(url);
     const searchEpisodeTitle: string = makeSearchSafeString(episodeTitle);
     if (episodeSearchResponse?.items?.length) {
-      const matchingEpisode = episodeSearchResponse.items.find(
-        (episode) => makeSearchSafeString(episode.name) === searchEpisodeTitle
-      );
+      const matchingEpisode = episodeSearchResponse.items.find((episode) => {
+        console.log(
+          episode.name,
+          makeSearchSafeString(episode.name),
+          searchEpisodeTitle
+        );
+        return makeSearchSafeString(episode.name) === searchEpisodeTitle;
+      });
       if (matchingEpisode) {
         return matchingEpisode;
       }
 
-      return this.getEpisode(spotifyPodcastId, episodeTitle, offset + limit);
+      return Spotify.getEpisode(spotifyPodcastId, episodeTitle, offset + limit);
     }
   }
 

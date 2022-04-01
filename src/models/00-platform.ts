@@ -11,7 +11,7 @@ import { Optional } from "sequelize/types";
 import PlatformHost from "./platform-host";
 import { IPlatform } from "../interfaces";
 
-interface PlatformCreationAttributes extends Optional<IPlatform, "id"> {}
+type PlatformCreationAttributes = Optional<IPlatform, "id">;
 
 @Table({
   timestamps: false,
@@ -22,6 +22,7 @@ class Platform extends Model<IPlatform, PlatformCreationAttributes> {
   @Column
   declare name: string;
 
+  // Unique string id representative of platform ('apple', 'overcast')
   @Unique
   @Column
   declare platformId: string;

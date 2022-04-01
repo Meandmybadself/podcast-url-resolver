@@ -68,7 +68,12 @@ export const lookupEpisodeByShareURL = async (
       },
       include: Platform,
     })
-  )?.platform;
+  )?.get("platform");
+
+  if (!platform) {
+    console.log("🚨 No platform found for hostname:", hostname);
+    return;
+  }
 
   const activePlatforms: {
     [key: string]: IPlatformClient;
@@ -125,7 +130,7 @@ export const lookupEpisodeByShareURL = async (
         // We don't have a canonical podcast in the db.
         // Let's ask Podcastindex if it knows about this pod.
         const podcastIndexResult: IPodcastIndexSearchResponse =
-          await podcastIndexAPI.searchByTerm(searchCriteria.podcastTitle);
+          await podcastIndexAPI.searchByTitle(searchCriteria.podcastTitle);
 
         // Get rid of podcasts we can't use.
         if (podcastIndexResult?.feeds?.length) {
@@ -199,7 +204,6 @@ export const lookupEpisodeByShareURL = async (
             searchTitle: episodeSearchTitle,
             canonicalPodcastId: canonicalPodcast.id,
           },
-          plain: true,
         });
 
         if (!canonicalEpisode) {
@@ -287,7 +291,7 @@ const getEpisodeByShareURL = async (platformEpisodeURL: string) => {
   });
 
   if (episodeURL) {
-    const canonicalEpisode = episodeURL.episode.get({ plain: true });
+    const canonicalEpisode = episodeURL.get("episode").get({ plain: true });
 
     if (canonicalEpisode) {
       const canonicalPodcast = (

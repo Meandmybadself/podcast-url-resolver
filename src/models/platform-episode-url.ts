@@ -17,8 +17,10 @@ interface PlatformEpisodeURLAttributes {
   platformEpisodeURL: string;
 }
 
-interface PlatformEpisodeURLCreationAttributes
-  extends Optional<PlatformEpisodeURLAttributes, "id"> {}
+type PlatformEpisodeURLCreationAttributes = Optional<
+  PlatformEpisodeURLAttributes,
+  "id"
+>;
 
 @Table({
   timestamps: true,
@@ -36,6 +38,7 @@ class PlatformEpisodeURL extends Model<
   declare episode: CanonicalEpisode;
 
   @ForeignKey(() => CanonicalEpisode)
+  @Column
   declare episodeId: number;
 
   @BelongsTo(() => Platform)

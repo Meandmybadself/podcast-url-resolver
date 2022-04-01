@@ -41,13 +41,15 @@ const initializeBaseTables = async () => {
 
     await User.create({ email: "meandmybadself@gmail.com", role: "admin" });
     await User.create({ email: "hello@nathangathright.com", role: "admin" });
-  } catch {
+  } catch (e) {
     console.error("🚨 Error while initializing database. Exiting.");
+    console.log(e);
     process.exit();
   }
 };
 
-(async () => {
+export const initDB = async () => {
+  //(async () => {
   try {
     await sequelize.authenticate();
   } catch (e) {
@@ -69,6 +71,6 @@ const initializeBaseTables = async () => {
     console.log("✅ prepush check - Successfully started. Exiting.");
     process.exit();
   }
-})();
+};
 
 export default sequelize;

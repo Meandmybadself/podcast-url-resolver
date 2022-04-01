@@ -1,3 +1,5 @@
+import { decode } from "html-entities";
+
 // Airline-rules string normalization for fuzzy string matching.
 // - removes all non-alphanumeric characters
 // - converts to lowercase
@@ -8,10 +10,12 @@ export const makeSearchSafeString = (string: string): string =>
 
 // This should be used to account for inconsistencies in how platforms represent titles.
 export const normalizeString = (string: string): string =>
-  string
-    .replaceAll("–", "-") // Em dash
-    .replaceAll("“", '"') // Smart quotes
-    .replaceAll("‘", "'")
-    .replaceAll("”", '"')
-    .replaceAll("’", "'")
-    .trim();
+  decode(
+    string
+      .replaceAll("–", "-") // Em dash
+      .replaceAll("“", '"') // Smart quotes
+      .replaceAll("‘", "'")
+      .replaceAll("”", '"')
+      .replaceAll("’", "'")
+      .trim()
+  );

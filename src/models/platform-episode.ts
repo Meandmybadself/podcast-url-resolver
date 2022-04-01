@@ -5,7 +5,6 @@ import {
   BelongsTo,
   ForeignKey,
   Index,
-  NotNull,
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
 import CanonicalEpisode from "./00-canonical-episode";
@@ -20,8 +19,10 @@ interface PlatformEpisodeAttributes {
   platformEpisodeId: string;
 }
 
-interface PlatformEpisodeCreationAttributes
-  extends Optional<PlatformEpisodeAttributes, "id"> {}
+type PlatformEpisodeCreationAttributes = Optional<
+  PlatformEpisodeAttributes,
+  "id"
+>;
 
 @Table({
   paranoid: true,
@@ -34,6 +35,7 @@ class PlatformEpisode extends Model<
   declare canonicalEpisode: CanonicalEpisode;
 
   @ForeignKey(() => CanonicalEpisode)
+  @Column
   declare canonicalEpisodeId: number;
 
   // This is necessary for the platforms that don't have notions of podcasts (overcast)
@@ -41,12 +43,14 @@ class PlatformEpisode extends Model<
   declare canonicalPodcast: CanonicalPodcast;
 
   @ForeignKey(() => CanonicalPodcast)
+  @Column
   declare canonicalPodcastId: number;
 
   @BelongsTo(() => Platform)
   declare platform: Platform;
 
   @ForeignKey(() => Platform)
+  @Column
   declare platformId: number;
 
   @Column

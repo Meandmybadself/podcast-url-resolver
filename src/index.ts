@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/node";
 
 console.log(`🎧 Episodes.fm starting in ${process.env.ENV} mode.`);
 
-import sequelize from "./sequelize"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { initDB } from "./sequelize"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { initExpress } from "./express";
 
 import jwt from "jsonwebtoken";
@@ -25,6 +25,7 @@ Sentry.init({
   });
 
   try {
+    await initDB();
     initExpress();
 
     if (process.env.LOG_USERS === "1") {

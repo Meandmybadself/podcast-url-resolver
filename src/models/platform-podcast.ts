@@ -30,12 +30,14 @@ class PlatformPodcast extends Model<
   declare platform: Platform;
 
   @ForeignKey(() => Platform)
+  @Column
   declare platformId: number;
 
   @BelongsTo(() => CanonicalPodcast)
   declare canonicalPodcast: CanonicalPodcast;
 
   @ForeignKey(() => CanonicalPodcast)
+  @Column
   declare canonicalPodcastId: number;
 
   @Unique

@@ -20,7 +20,7 @@ interface IRequestAttempt {
   deletedAt?: Date;
 }
 
-interface RequestCreationAttributes extends Optional<IRequestAttempt, "id"> {}
+type RequestCreationAttributes = Optional<IRequestAttempt, "id">;
 
 @Table
 class RequestAttempt extends Model<IRequestAttempt, RequestCreationAttributes> {
@@ -28,6 +28,7 @@ class RequestAttempt extends Model<IRequestAttempt, RequestCreationAttributes> {
   declare user: User;
 
   @ForeignKey(() => User)
+  @Column
   declare userId: number;
 
   @Default(() => moment().format("YYYYMMDD"))

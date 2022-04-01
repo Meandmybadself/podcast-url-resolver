@@ -15,8 +15,7 @@ interface PlatformHostAttributes {
   platformId: number;
 }
 
-interface PlatformHostCreationAttributes
-  extends Optional<PlatformHostAttributes, "id"> {}
+type PlatformHostCreationAttributes = Optional<PlatformHostAttributes, "id">;
 
 @Table({
   timestamps: false,
@@ -34,6 +33,7 @@ class PlatformHost extends Model<
   platform: Platform;
 
   @ForeignKey(() => Platform)
+  @Column
   declare platformId: number;
 }
 export default PlatformHost;

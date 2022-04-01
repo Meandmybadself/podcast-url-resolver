@@ -39,6 +39,7 @@ module.exports = {
     "@typescript-eslint/no-misused-promises": 0,
     "@typescript-eslint/no-unsafe-return": 0,
     "@typescript-eslint/no-unsafe-argument": 0,
+    "@typescript-eslint/restrict-template-expressions": 0,
   },
   overrides: [
     {
