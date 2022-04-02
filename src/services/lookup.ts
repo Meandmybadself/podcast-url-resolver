@@ -97,8 +97,10 @@ export const lookupEpisodeByShareURL = async (
         searchCriteria.episodeTitle
       );
 
-      console.log("searchCriteria podcast title", searchCriteria.podcastTitle);
-      console.log("searchCriteria episode title", searchCriteria.episodeTitle);
+      console.log(
+        "🔬 Search criteria: ",
+        `${searchCriteria.podcastTitle} / ${searchCriteria.episodeTitle}`
+      );
 
       // We found at minimum, a podcast title & episode title to work with.
       let canonicalPodcast: ICanonicalPodcast | undefined;
@@ -468,6 +470,12 @@ export const lookupPodcastByFeedURL = async (
         /^https?:\/\//m,
         ""
       )}`;
+
+      thirdPartyFeedURLs[
+        "playerfm"
+      ] = `https://player.fm/series/${encodeURIComponent(
+        canonicalPodcast.feedURL
+      )}`;
     }
 
     return thirdPartyFeedURLs;
@@ -592,6 +600,10 @@ const getThirdPartyPlatformEpisodeURLs = async (
       /^https?:\/\//m,
       ""
     )}/${canonicalEpisode.guid}`;
+
+    thirdPartyURLs["playerfm"] = `https://player.fm/series/${encodeURIComponent(
+      canonicalPodcast.feedURL
+    )}/guid:${encodeURIComponent(canonicalEpisode.guid)}`;
   }
 
   return thirdPartyURLs;

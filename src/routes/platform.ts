@@ -25,6 +25,11 @@ const routes = (router: Router): void => {
         id: "podcastaddict",
       });
 
+      result.push({
+        name: "Player FM",
+        id: "playerfm",
+      });
+
       response.success({ result });
     }
   );

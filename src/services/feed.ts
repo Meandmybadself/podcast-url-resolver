@@ -130,7 +130,7 @@ export const loadAndUpsertFeed = async (
 
       // Associate all feed episodes.
       // This is expensive for big podcasts (Gross).
-      console.log(`📦  Upserting ${feedEpisodes.length} canonical episodes.`);
+      console.log(`📦 Upserting ${feedEpisodes.length} canonical episodes.`);
       await CanonicalEpisode.bulkCreate(
         feedEpisodes.map((episode: IFeedEpisode) => {
           const {
