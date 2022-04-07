@@ -93,6 +93,7 @@ export default class Stitcher
         sanitizeStitcherQuery(title)
       )}&count=10`
     );
+
     if (data?.shows?.length) {
       const searchTitle = makeSearchSafeString(title);
       const matchingShow: IStitcherPodcast | undefined = find(
@@ -138,7 +139,10 @@ export default class Stitcher
       await Stitcher._searchForPodcast(canonicalPodcast.title);
     let platformPodcast: any;
     if (stitcherPodcast) {
-      await this.upsertPlatformPodcast(canonicalPodcast, stitcherPodcast.slug);
+      platformPodcast = await this.upsertPlatformPodcast(
+        canonicalPodcast,
+        stitcherPodcast.slug
+      );
 
       if (platformPodcast) {
         const { data } = await BasePlatformClient.getPageData(
